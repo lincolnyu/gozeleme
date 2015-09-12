@@ -1,0 +1,143 @@
+﻿<Window x:Class="FileMatcher.RedunduncySummary"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:local="clr-namespace:FileMatcher"
+        Title="Redundancy Summary" Height="536" Width="679" ResizeMode="CanResizeWithGrip">
+    <Window.CommandBindings>
+        <CommandBinding Command="local:CommandLibrary.OpenFolder" CanExecute="OnCanExecuteOpenFolder"
+                        Executed="OnExecuteOpenFolder"/>
+        <CommandBinding Command="local:CommandLibrary.Delete" CanExecute="OnCanExecuteDelete"
+                        Executed="OnExecuteDelete" />
+        <CommandBinding Command="local:CommandLibrary.Undelete" CanExecute="OnCanExecuteUndelete"
+                        Executed="OnExecuteUndelete" />
+        <CommandBinding Command="local:CommandLibrary.Shortcut" CanExecute="OnCanExecuteShortcut"
+                        Executed="OnExecuteShortcut"/>
+    </Window.CommandBindings>
+    <DockPanel LastChildFill="True">
+        <Menu HorizontalAlignment="Left" Height="24" VerticalAlignment="Top" Grid.Row ="0" Margin="0,0,0,0"
+              DockPanel.Dock="Top">
+            <MenuItem Header="_File">
+                <MenuItem.Items>
+                    <MenuItem Header="_Close" Click="MiClose_OnClick"/>
+                </MenuItem.Items>
+            </MenuItem>
+            <MenuItem Header="_View">
+                <MenuItem.Items>
+                    <MenuItem Name="MiFilter" Header="_Filter" Click="MiFilter_OnClick"></MenuItem>
+                </MenuItem.Items>
+            </MenuItem>
+            <MenuItem Header="_Edit">
+                <MenuItem.Items>
+                    <MenuItem Name="MiUndo" Header="_Undo" Click="MiUndo_OnClick" IsEnabled="{Binding Path=Undoable}"/>
+                    <MenuItem Name="MiRedo" Header="_Redo" Click="MiRedo_OnClick" IsEnabled="{Binding Path=Redoable}"/>
+                    <MenuItem Name="MiApply" Header="_Apply" Click="MiApply_OnClick"></MenuItem>
+                </MenuItem.Items>
+            </MenuItem>
+            <MenuItem Header="_Actions">
+                <MenuItem.Items>
+                    <MenuItem Name="MiDeleteSelected" Header="_Delete Selected" Command="local:CommandLibrary.Delete"></MenuItem>
+                    <MenuItem Name="MiUndeleteSelected" Header="_Undelete Selected" Command="local:CommandLibrary.Undelete"></MenuItem>
+                    <MenuItem Name="MiPickRepresentative" Header="Pick _Representative" IsCheckable="True" Click="MiPickRepresentative_OnClick"></MenuItem>
+                    <MenuItem Name="MiPickSurvivor" Header="Delete Unpicked" IsCheckable="True" Click="MiPickSurvivor_OnClick"></MenuItem>
+                </MenuItem.Items>
+            </MenuItem>
+            <MenuItem Header="_Help">
+                <MenuItem.Items>
+                    <MenuItem Name="MiOnlineHelp" Header="_Online Help" Click="MiOnlineHelp_OnClick"/>
+                </MenuItem.Items>
+            </MenuItem>
+        </Menu>
+        <DockPanel LastChildFill="True">
+            <DockPanel DockPanel.Dock="Top" Height="28">
+                <Button x:Name="BtnUndelSel" Content="Undelete Selected" HorizontalAlignment="Left"
+                VerticalAlignment="Top" Width="106" Height="20" DockPanel.Dock="Right" Margin="10,4,10,0"
+                Command="local:CommandLibrary.Undelete"/>
+                <Button Name="BtnDelSel" Content="Delete selected" HorizontalAlignment="Left" Margin="10,4,10,0"
+                        VerticalAlignment="Top" Width="106" Height="20" Command="local:CommandLibrary.Delete" DockPanel.Dock="Right"/>
+                <Label Content="Files found with redundancy:" HorizontalAlignment="Left" Margin="10,4,0,0" VerticalAlignment="Top" 
+                       DockPanel.Dock="Left" Height="26" Width="238"/>
+            </DockPanel>
+            <ListView Name="LvRedundant" Margin="10,0,0,10" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                  ItemsSource="{Binding Path=IdenticalFiles}" DockPanel.Dock="Top"
+                    DataContextChanged="LvRedundant_OnDataContextChanged" 
+                      GridViewColumnHeader.Click="LvRedundantGridViewColumnHeaderOnClick"
+                      SelectionChanged="LvRedundant_OnSelectionChanged" MouseDoubleClick="LvRedundant_OnMouseDoubleClick">
+                <ListView.Resources>
+                    <DataTemplate x:Key="StateTemplate" DataType="local:FileInfoEx">
+                        <TextBlock Text="{Binding State}">
+                            <TextBlock.ToolTip>
+                                <ToolTip>
+                                    <TextBlock Text="{Binding ShortcutTooltip}"/>
+                                </ToolTip>
+                            </TextBlock.ToolTip>
+                        </TextBlock>
+                    </DataTemplate>
+                </ListView.Resources>
+                <ListView.GroupStyle>
+                    <GroupStyle>
+                        <GroupStyle.HeaderTemplate>
+                            <DataTemplate>
+                                <TextBlock FontWeight="Bold" FontSize="15"
+                                       Text="{Binding Path=Name}" Foreground="Blue" Background="Green"/>
+                            </DataTemplate>
+                        </GroupStyle.HeaderTemplate>
+                    </GroupStyle>
+                </ListView.GroupStyle>
+                <ListView.ItemContainerStyle>
+                    <Style TargetType="{x:Type ListViewItem}">
+                        <Setter Property="BorderThickness" Value="1" />
+                        <Setter Property="Width" Value="Auto" />
+                        <Setter Property="FontSize" Value="12.4"  />
+                        <Setter Property="Foreground" Value="Black" />
+                        <Setter Property="Background" Value="Transparent" />
+                        <Setter Property="Margin" Value="0,0,0,0" />
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="{x:Type ListViewItem}">
+                                    <TextBlock Background="{TemplateBinding Background}">
+                                        <GridViewRowPresenter/>
+                                    </TextBlock>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                        <Style.Triggers>
+                            <Trigger Property="IsSelected" Value="true">
+                                <Setter Property="Background" Value="Yellow"/>
+                            </Trigger>
+                            <DataTrigger Binding="{Binding Path=IsSelectedToDelete}" Value="true">
+                                <Setter Property="Foreground" Value="Gray"/>
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate TargetType="{x:Type ListViewItem}">
+                                            <TextBlock x:Name="Tb" Background="{TemplateBinding Background}">
+                                                <TextBlock.TextDecorations>
+                                                    <TextDecoration Location="Strikethrough" PenOffset="-2" PenOffsetUnit="Pixel"/>
+                                                </TextBlock.TextDecorations>
+                                            <GridViewRowPresenter/>
+                                            </TextBlock>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </ListView.ItemContainerStyle>
+                <ListView.View>
+                    <GridView>
+                        <GridViewColumn Header="Name" DisplayMemberBinding="{Binding Path=Name}" Width="100"/>
+                        <GridViewColumn Header="Directory" DisplayMemberBinding="{Binding Path=DirectoryName}" Width="360"/>
+                        <GridViewColumn Header="Size (Bytes)" DisplayMemberBinding="{Binding Path=DisplayFileSize}" Width="80"/>
+                        <GridViewColumn Header="State" CellTemplate="{StaticResource StateTemplate}" Width="80"/>
+                    </GridView>
+                </ListView.View>
+                <ListView.ContextMenu>
+                    <ContextMenu>
+                        <MenuItem Command="local:CommandLibrary.OpenFolder" Header="Open file location"/>
+                        <MenuItem Command="local:CommandLibrary.Delete" />
+                        <MenuItem Command="local:CommandLibrary.Undelete" />
+                        <MenuItem Command="local:CommandLibrary.Shortcut" />
+                    </ContextMenu>
+                </ListView.ContextMenu>
+            </ListView>
+        </DockPanel>
+    </DockPanel>
+</Window>

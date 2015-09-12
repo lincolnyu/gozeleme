@@ -1,0 +1,46 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileMatcher", "FileMatcher\FileMatcher.csproj", "{FBC4D53F-6CD9-47FC-B832-70F0AFCEA59A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileMatcherLib", "FileMatcherLib\FileMatcherLib.csproj", "{4983EC14-AB0D-4702-9376-69540F618AD5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileMatcherConsole", "FileMatcherConsole\FileMatcherConsole.csproj", "{963A8C90-578F-4D8E-B94F-84EDA1FBEF83}"
+EndProject
+Global
+	GlobalSection(TeamFoundationVersionControl) = preSolution
+		SccNumberOfProjects = 4
+		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
+		SccTeamFoundationServer = https://tfs.codeplex.com/tfs/tfs25
+		SccLocalPath0 = .
+		SccProjectUniqueName1 = FileMatcher\\FileMatcher.csproj
+		SccProjectName1 = FileMatcher
+		SccLocalPath1 = FileMatcher
+		SccProjectUniqueName2 = FileMatcherConsole\\FileMatcherConsole.csproj
+		SccProjectName2 = FileMatcherConsole
+		SccLocalPath2 = FileMatcherConsole
+		SccProjectUniqueName3 = FileMatcherLib\\FileMatcherLib.csproj
+		SccProjectName3 = FileMatcherLib
+		SccLocalPath3 = FileMatcherLib
+	EndGlobalSection
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{FBC4D53F-6CD9-47FC-B832-70F0AFCEA59A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FBC4D53F-6CD9-47FC-B832-70F0AFCEA59A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FBC4D53F-6CD9-47FC-B832-70F0AFCEA59A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FBC4D53F-6CD9-47FC-B832-70F0AFCEA59A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4983EC14-AB0D-4702-9376-69540F618AD5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4983EC14-AB0D-4702-9376-69540F618AD5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4983EC14-AB0D-4702-9376-69540F618AD5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4983EC14-AB0D-4702-9376-69540F618AD5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{963A8C90-578F-4D8E-B94F-84EDA1FBEF83}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{963A8C90-578F-4D8E-B94F-84EDA1FBEF83}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{963A8C90-578F-4D8E-B94F-84EDA1FBEF83}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
