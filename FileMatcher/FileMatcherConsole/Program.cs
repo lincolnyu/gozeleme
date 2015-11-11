@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using FileMatcherLib;
+using System.Collections.Specialized;
 
 namespace FileMatcherConsole
 {
@@ -22,17 +23,18 @@ namespace FileMatcherConsole
                 Console.WriteLine(@"Usage: {0} <folder1> <folder2> ...", appn);
                 return;
             }
-            var fm = new FileMatcher(args);
-            var igs = fm.GetIdenticalFiles(new FileMatchingCanceller());
-            var count = 0;
 
+            var fm = new FileMatcher(args);
             Console.WriteLine(@"Searching identical files in folders, ");
             foreach (var sd in fm.StartingDirectories)
             {
                 Console.WriteLine(@"  {0}", sd);
             }
 
-            foreach (var ig in igs)
+            fm.GetIdenticalFiles(new FileMatchingCanceller());
+
+            var count = 0;
+            foreach (var ig in fm.IdenticalFilesList)
             {
                 var fileLen = ig.First.Value.Length;
                 if (fileLen == 0)
@@ -45,15 +47,15 @@ namespace FileMatcherConsole
                     Console.WriteLine(@"==== Identical-file group {0:00000}, size {1:0000} Bytes, count {2:0000} ===== ",
                                       count++, fileLen, ig.Count);
                 }
-                else if (fileLen < 1024*1024)
+                else if (fileLen < 1024 * 1024)
                 {
                     Console.WriteLine(@"==== Identical-file group {0:00000}, size {1:0000} KB, count {2:0000} ===== ",
-                                      count++, (fileLen+512)/1024, ig.Count);
+                                      count++, (fileLen + 512) / 1024, ig.Count);
                 }
                 else
                 {
                     Console.WriteLine(@"==== Identical-file group {0:00000}, size {1:0000} MB, count {2:0000} ===== ",
-                                      count++, (fileLen + 512*1024)/(1024*1024), ig.Count);
+                                      count++, (fileLen + 512 * 1024) / (1024 * 1024), ig.Count);
                 }
                 var lastSdi = -1;
                 var folder = "";

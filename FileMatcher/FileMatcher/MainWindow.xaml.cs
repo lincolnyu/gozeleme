@@ -66,36 +66,21 @@ namespace FileMatcher
                 MessageBox.Show(Strings.RedudantSearchFolders, Strings.AppName);
             }
 
-            var rs = new RedunduncySummary
-            {
-                Owner = this,
-                WindowStartupLocation = WindowStartupLocation.CenterOwner
-            };
-
             var fmwo = new FileMatcherWorkingObject
             {
                 FileMatcher = fm
             };
 
-            var pd = new ProgressDialog(fmwo) { Owner = this };
+            var rs = new DuplicatesSummary(fmwo)
+            {
+                Owner = this,
+                WindowStartupLocation = WindowStartupLocation.CenterOwner
+            };
 
             ThreadPool.QueueUserWorkItem(FileMatcherWorkingMethod, fmwo);
 
-            pd.ShowDialog();
-
-            if (!fmwo.Finished)
-            {
-                fmwo.Finish.WaitOne();
-            }
-
-            if (fmwo.Canceled)
-            {
-                MessageBox.Show(Strings.FileMatchingCanceledByUser, Strings.Alert);
-            }
-
             // redundancy summary
-            var igs = fmwo.IdenticalGroups;
-            rs.InitializeDialog(igs);
+            rs.InitializeDialog();
 
             rs.ShowDialog();
         }
@@ -168,15 +153,9 @@ namespace FileMatcher
         private static void FileMatcherWorkingMethod(object a)
         {
             var fmwo = (FileMatcherWorkingObject)a;
-            var pd = fmwo.ProgressDialog;
 
-            fmwo.FileMatcher.UpdateProgress = pd.UpdateProgress;
-            fmwo.FileMatcher.UpdateStatus = pd.UpdateStatus;
+            fmwo.FileMatcher.GetIdenticalFiles(fmwo.Canceller);
 
-            var igs = fmwo.FileMatcher.GetIdenticalFiles(fmwo.Canceller);
-            fmwo.Canceled = fmwo.Canceller.Canceled;    // the canceled signal before dialog close (which itself sends the signal) determines if it's been canceled by the user
-            pd.Finish();
-            fmwo.IdenticalGroups = igs;
             fmwo.Finished = true;
             fmwo.Finish.Set();
         }

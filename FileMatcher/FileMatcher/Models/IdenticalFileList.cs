@@ -1,15 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.IO;
 
 namespace FileMatcher
 {
     /// <summary>
     ///  A class that keeps all files that have duplicates
     ///  in the following order (governed by FileComparer)
-    ///  1. file size, descending
-    ///  2. file name, ascending dictionary order
-    ///  3. full directory, ascending dictionary order
+    ///  1. length, descending
+    ///  2. group id, ascedning
+    ///  3. file name, ascending dictionary order
+    ///  4. full directory, ascending dictionary order
     /// </summary>
     public class IdenticalFileList : List<FileInfoEx>, INotifyCollectionChanged
     {
@@ -17,18 +19,25 @@ namespace FileMatcher
         {
             public int Compare(FileInfoEx x, FileInfoEx y)
             {
-                var c = x.GroupId.CompareTo(y.GroupId);
+                var c = y.Length.CompareTo(x.Length);
                 if (c != 0)
                 {
                     return c;
                 }
-                c = String.Compare(x.Name, y.Name, StringComparison.Ordinal);
-                return c != 0 ? c : String.Compare(x.FullName, y.FullName, 
+                c = x.GroupId.CompareTo(y.GroupId);
+                if (c != 0)
+                {
+                    return c;
+                }
+                c = string.Compare(x.Name, y.Name, StringComparison.Ordinal);
+                return c != 0 ? c : string.Compare(x.FullName, y.FullName, 
                     StringComparison.Ordinal);
             }
 
             public static FileComparer Instance = new FileComparer();
         }
+
+        public event NotifyCollectionChangedEventHandler CollectionChanged;
 
         public new void Add(FileInfoEx fileInfo)
         {
@@ -65,6 +74,25 @@ namespace FileMatcher
             return BinarySearch(fileInfo, FileComparer.Instance);
         }
 
-        public event NotifyCollectionChangedEventHandler CollectionChanged;
+        public int Find(FileInfo fileInfo)
+        {
+            var target = new FileInfoEx(fileInfo);
+            return Find(target);
+        }
+
+        public int FindGroupStart(FileInfoEx fileInfo)
+        {
+            var i = Find(fileInfo);
+            var groupId = fileInfo.GroupId;
+            for (;i>=0 && this[i].GroupId == groupId; i--)
+            {
+            }
+            return i + 1;
+        }
+        public int FindGroupStart(FileInfo fileInfo)
+        {
+            var target = new FileInfoEx(fileInfo);
+            return FindGroupStart(target);
+        }
     }
 }

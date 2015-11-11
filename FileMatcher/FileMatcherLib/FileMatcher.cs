@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
-using System.Text;
 using System.Threading;
 
 namespace FileMatcherLib
@@ -12,6 +12,23 @@ namespace FileMatcherLib
     /// </summary>
     public class FileMatcher
     {
+        #region Enumerations
+
+        public enum Statuses
+        {
+            Scanning,
+            CleaningUp, // clean up: eliminating single item groups
+            Done,
+        }
+
+        #endregion
+
+        #region Delegates
+
+        public delegate void UpdatedEventHandler(object sender);
+
+        #endregion
+
         #region Nested classes
 
         public class CancellerInfo
@@ -28,14 +45,6 @@ namespace FileMatcherLib
         private readonly Queue<FileInfo> _queuedFiles = new Queue<FileInfo>();
         private readonly AutoResetEvent _fileMatchingEvent = new AutoResetEvent(false);
 
-        private string _scannerMessage;
-        private int _numFilesFound;
-        private int _numFilesAdded;
-
-        private int _numDuplicates;
-        private int _numDuplicateGroups;
-        private long _totalDuplicateBytes;
-
         private DateTime _lastUpdate;
         private const int MinUpdateInterval = 200;
 
@@ -46,7 +55,13 @@ namespace FileMatcherLib
         /// <summary>
         ///  instantiates a FileMatcher with the specified path strings in variable argument list
         /// </summary>
+        /// <param name="fileHash">The file hash function to use</param>
         /// <param name="startingPaths">The path strings to the starting directories</param>
+        public FileMatcher(IFileHash fileHash, params string[] startingPaths)
+            : this(fileHash, (IEnumerable<string>)startingPaths)
+        {
+        }
+
         public FileMatcher(params string[] startingPaths)
             : this((IEnumerable<string>)startingPaths)
         {
@@ -55,66 +70,130 @@ namespace FileMatcherLib
         /// <summary>
         ///  instantiates a FileMatcher with the specified starting directories in variable argument list
         /// </summary>
+        /// <param name="fileHash">The file hash function to use</param>
         /// <param name="startingDirs">The starting directories</param>
-        public FileMatcher(params DirectoryInfo[] startingDirs)
-            : this((IEnumerable<DirectoryInfo>)startingDirs)
+        public FileMatcher(IFileHash fileHash, params DirectoryInfo[] startingDirs)
+            : this(fileHash, (IEnumerable<DirectoryInfo>)startingDirs)
         {
         }
+
+        public FileMatcher(params DirectoryInfo[] startingDirs)
+        : this((IEnumerable<DirectoryInfo>)startingDirs)
+        {
+        }
+
 
         /// <summary>
         ///  instantiates a FileMatcher with the specified path strings to the starting directories
         /// </summary>
+        /// <param name="fileHash">The file hash function to use</param>
         /// <param name="startingPaths">The path strings to the starting directories</param>
+        public FileMatcher(IFileHash fileHash, IEnumerable<string> startingPaths)
+        {
+            StartingDirectories = StartDirectoryValidator.Validate(startingPaths);
+            _lastUpdate = DateTime.Now;
+
+            FileDictionary = new FileDictionary(fileHash);
+            Adaptor = new DynamicFileGroupAdaptor(FileDictionary);
+        }
+
         public FileMatcher(IEnumerable<string> startingPaths)
         {
             StartingDirectories = StartDirectoryValidator.Validate(startingPaths);
             _lastUpdate = DateTime.Now;
+            
+            FileDictionary = new FileDictionary(FileHash.Instance);
+            Adaptor = new DynamicFileGroupAdaptor(FileDictionary);
         }
 
         /// <summary>
         ///  instantiates a FileMatcher with the specified starting directories
         /// </summary>
+        /// <param name="fileHash">The file hash function to use</param>
         /// <param name="startingDirs">The starting directories</param>
+        public FileMatcher(IFileHash fileHash, IEnumerable<DirectoryInfo> startingDirs)
+        {
+            StartingDirectories = StartDirectoryValidator.Validate(startingDirs);
+            _lastUpdate = DateTime.Now;
+
+            FileDictionary = new FileDictionary(fileHash);
+            Adaptor = new DynamicFileGroupAdaptor(FileDictionary);
+        }
+
         public FileMatcher(IEnumerable<DirectoryInfo> startingDirs)
         {
             StartingDirectories = StartDirectoryValidator.Validate(startingDirs);
             _lastUpdate = DateTime.Now;
+
+            FileDictionary = new FileDictionary(FileHash.Instance);
+            Adaptor = new DynamicFileGroupAdaptor(FileDictionary);
         }
 
         #endregion
 
         #region Properties
-        
+
         /// <summary>
         ///  The starting directories to work from (redundancy already removed)
         /// </summary>
         public List<DirectoryInfo> StartingDirectories { get; private set; }
 
+        public ObservableCollection<IdenticalFiles> IdenticalFilesList
+        {
+            get
+            {
+                return Adaptor.IdenticalFileGroups;
+            }
+        }
+
         /// <summary>
         ///  The status updator
         /// </summary>
-        public UpdateStatusDelegate UpdateStatus { get; set; }
+        public event UpdatedEventHandler StatusUpdated;
 
-        /// <summary>
-        ///  The progress updator
-        /// </summary>
-        public UpdateProgressDelegate UpdateProgress { get; set; }
+        public event UpdatedEventHandler ProgressUpdated;
+
+        public FileDictionary FileDictionary { get; private set; }
+
+        public DynamicFileGroupAdaptor Adaptor { get; private set; }
+
+        public int NumFilesFound { get; private set; }
+
+        public int NumFilesAdded { get; private set; }
+
+        public int NumDuplicates { get; set; }
+
+        public int NumDuplicateGroups { get; set; }
+
+        public long TotalDuplicateBytes { get; private set; }
+
+        public DirectoryInfo CurrentDirectory { get; private set; }
+
+        public double Progress { get { return (double)NumFilesAdded / NumFilesFound; } }
+
+        public Statuses Status { get; private set; }
 
         #endregion
 
         #region Methods
 
         /// <summary>
-        ///  returns a list of identical file groups
+        ///  Work to update the list of identical file groups
         /// </summary>
-        /// <param name="fileHash">The file hash function to use</param>
         /// <param name="canceller">The canceller that can cancel the process as per user's request</param>
         /// <returns>The list of groups each containg more than one identical file found</returns>
-        public List<IdenticalFiles> GetIdenticalFiles(IFileHash fileHash, FileMatchingCanceller canceller)
+        public void GetIdenticalFiles(FileMatchingCanceller canceller)
         {
-            var fd = new FileDictionary(fileHash);
+            CurrentDirectory = null;
+            NumFilesFound = 0;
+            NumDuplicateGroups = 0;
+            NumDuplicates = 0;
+            NumFilesAdded = 0;
+            TotalDuplicateBytes = 0;
+            Status = Statuses.Scanning;
+            UpdateProgress();
+            UpdateStatus();
 
-            _numFilesFound = 0;
             var thread = new Thread(ScanFiles);
 
             var cancellerInfo = new CancellerInfo
@@ -132,7 +211,7 @@ namespace FileMatcherLib
             thread.Start(cancellerInfo);
 
             _finished = false;
-            _numFilesAdded = 0;
+            NumFilesAdded = 0;
             while (true)
             {
                 int count;
@@ -167,52 +246,40 @@ namespace FileMatcherLib
                         }
                         file = _queuedFiles.Dequeue();
                     }
-                    fd.AddFile(file);
-                    _numFilesAdded++;
-                    _numDuplicateGroups = fd.DuplicateGroups;
-                    _numDuplicates = fd.DuplicateFiles;
-                    _totalDuplicateBytes = fd.DuplicateBytes;
-                    UpdateMessage();
+                    FileDictionary.AddFile(file);
+                    NumFilesAdded++;
+                    NumDuplicateGroups = FileDictionary.DuplicateGroups;
+                    NumDuplicates = FileDictionary.DuplicateFiles;
+                    TotalDuplicateBytes = FileDictionary.DuplicateBytes;
+                    UpdateProgress();
                 }
             }
 
             thread.Join();
 
-            if (UpdateStatus != null)
-            {
-                UpdateStatus(Strings.PostProcessingRemovingSingles);
-            }
+            Status = Statuses.CleaningUp;
+            UpdateStatus();
 
-            fd.RemoveSingleFiles();
+            FileDictionary.RemoveSingleFiles();
 
-            if (UpdateStatus != null)
-            {
-                UpdateStatus(Strings.PostProcessingGeneratingList);
-            }
-
-            var list = fd.GenerateIdenticalList();
-
-            if (UpdateStatus != null)
-            {
-                UpdateStatus(Strings.PostProcessingDone);
-            }
-            if (UpdateProgress != null)
-            {
-                UpdateProgress(1);
-            }
-
-            return list;
+            Status = Statuses.Done;
+            UpdateStatus();
         }
 
-
-        /// <summary>
-        ///  returns a list of identical file groups
-        /// </summary>
-        /// <param name="canceller">The canceller that can cancel the process as per user's request</param>
-        /// <returns>The list of groups each containg more than one identical file found</returns>
-        public List<IdenticalFiles> GetIdenticalFiles(FileMatchingCanceller canceller)
+        private void UpdateStatus()
         {
-            return GetIdenticalFiles(FileHash.Instance, canceller);
+            if (StatusUpdated != null)
+            {
+                StatusUpdated(this);
+            }
+        }
+
+        private void UpdateProgress()
+        {
+            if (ProgressUpdated != null)
+            {
+                ProgressUpdated(this);
+            }
         }
 
         private void ScanFiles(object o)
@@ -222,12 +289,6 @@ namespace FileMatcherLib
             var canceller = cancellerInfo.Canceller;
             var syncEvent = cancellerInfo.SyncEvent;
             
-            UpdateStatusDelegate innerUpdate = s =>
-            {
-                _scannerMessage = s;
-                UpdateMessage();
-            };
-
             foreach (var sd in StartingDirectories)
             {
                 if (canceller.Canceled)
@@ -235,7 +296,15 @@ namespace FileMatcherLib
                     break;
                 }
 
-                var fs = new FileScanner(sd, innerUpdate);
+                var fs = new FileScanner(sd);
+                fs.PropertyChanged += (sender, args) =>
+                {
+                    if (args.PropertyName == "CurrentDirectory")
+                    {
+                        CurrentDirectory = fs.CurrentDirectory;
+                        UpdateStatus();
+                    };
+                };
                 foreach (var f in fs)
                 {
                     while (canceller.Paused)
@@ -252,52 +321,16 @@ namespace FileMatcherLib
                         _queuedFiles.Enqueue(f);
                     }
 
-                    _numFilesFound++;
+                    NumFilesFound++;
                     _fileMatchingEvent.Set();
                 }
             }
 
             _finished = true;
-            _scannerMessage = "";
-            UpdateMessage();
+            CurrentDirectory = null;
+            UpdateStatus();
         }
-
-        private void UpdateMessage()
-        {
-            // not to update the message so frequently
-            var now = DateTime.Now;
-            if ((now - _lastUpdate).Milliseconds < MinUpdateInterval)
-            {
-                return;
-            }
-            _lastUpdate = now;
-            lock (this)
-            {
-                if (UpdateStatus != null)
-                {
-                    var sb = new StringBuilder();
-                    sb.Append(_scannerMessage);
-                    sb.AppendFormat(Strings.FilesProcessedSoFar + "\n", _numFilesAdded);
-                    sb.AppendFormat(Strings.DuplicationUpdate+"\n",
-                        _numDuplicateGroups, _numDuplicates, _totalDuplicateBytes.ToString("###,###,###,###,##0"));
-                    if (!_finished)
-                    {
-                        sb.AppendFormat(Strings.FilesFoundSoFar + "\n", _numFilesFound);
-                    }
-                    else
-                    {
-                        sb.AppendFormat(Strings.FilesFoundTotal + "\n", _numFilesFound);
-                    }
-                    UpdateStatus(sb.ToString());
-                }
-                if (_finished && UpdateProgress != null)
-                {
-                    var completeRate = (float) _numFilesAdded/_numFilesFound;
-                    UpdateProgress(completeRate);
-                }
-            }
-        }
-
+        
         #endregion
     }
 }

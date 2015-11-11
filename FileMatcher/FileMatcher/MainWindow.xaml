@@ -1,7 +1,7 @@
 ﻿<Window x:Class="FileMatcher.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Duplicate File Locator" Height="350" Width="451.333"
+        Title="Duplicate Files Finder" Height="350" Width="451.333"
         ResizeMode="NoResize" WindowStartupLocation="CenterScreen" AllowDrop="True" 
         PreviewDrop="MainWindow_OnPreviewDrop">
     <Grid AllowDrop="True">

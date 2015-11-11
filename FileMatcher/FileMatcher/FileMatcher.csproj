@@ -13,14 +13,14 @@
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <WarningLevel>4</WarningLevel>
-    <IsWebBootstrapper>true</IsWebBootstrapper>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
     <SccProjectName>SAK</SccProjectName>
     <SccLocalPath>SAK</SccLocalPath>
     <SccAuxPath>SAK</SccAuxPath>
     <SccProvider>SAK</SccProvider>
-    <PublishUrl>publish\</PublishUrl>
+    <PublishUrl>C:\Users\quanb\Desktop\</PublishUrl>
     <Install>true</Install>
-    <InstallFrom>Web</InstallFrom>
+    <InstallFrom>Disk</InstallFrom>
     <UpdateEnabled>true</UpdateEnabled>
     <UpdateMode>Background</UpdateMode>
     <UpdateInterval>7</UpdateInterval>
@@ -28,11 +28,9 @@
     <UpdatePeriodically>false</UpdatePeriodically>
     <UpdateRequired>false</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
-    <InstallUrl>http://gozleme.codeplex.com/releases/clickonce/</InstallUrl>
     <UpdateUrl>http://gozleme.codeplex.com/releases/clickonce/</UpdateUrl>
-    <CreateWebPageOnPublish>true</CreateWebPageOnPublish>
     <WebPage>publish.htm</WebPage>
-    <ApplicationRevision>3</ApplicationRevision>
+    <ApplicationRevision>4</ApplicationRevision>
     <ApplicationVersion>1.5.3.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
@@ -107,12 +105,10 @@
     </ApplicationDefinition>
     <Compile Include="CommandLibrary.cs" />
     <Compile Include="Controls\SubmissiveDockPanel.cs" />
+    <Compile Include="FileGrouping\IdenticalFileListUpdater.cs" />
     <Compile Include="Models\FileMatcherWorkingObject.cs" />
     <Compile Include="Models\IProgressContext.cs" />
     <Compile Include="Models\PercentSizeValidationRule.cs" />
-    <Compile Include="ProgressDialog.xaml.cs">
-      <DependentUpon>ProgressDialog.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Extensions\CShellLink.cs" />
     <Compile Include="Extensions\IconHelper.cs" />
     <Compile Include="Extensions\IPersistFile.cs" />
@@ -124,8 +120,8 @@
     <Compile Include="Controllers\DeleteOrUndeleteOperation.cs" />
     <Compile Include="Models\FileInfoEx.cs" />
     <Compile Include="Models\IdenticalFileList.cs" />
-    <Compile Include="RedunduncySummary.xaml.cs">
-      <DependentUpon>RedunduncySummary.xaml</DependentUpon>
+    <Compile Include="DuplicatesSummary.xaml.cs">
+      <DependentUpon>DuplicatesSummary.xaml</DependentUpon>
     </Compile>
     <Compile Include="Strings.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -150,11 +146,7 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Page Include="ProgressDialog.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="RedunduncySummary.xaml">
+    <Page Include="DuplicatesSummary.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

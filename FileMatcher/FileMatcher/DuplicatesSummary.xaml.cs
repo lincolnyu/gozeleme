@@ -11,13 +11,15 @@ using System.Windows.Input;
 using FileMatcher.Controllers;
 using FileMatcher.Extensions;
 using FileMatcherLib;
+using FileMatcher.Models;
+using FileMatcher.FileGrouping;
 
 namespace FileMatcher
 {
     /// <summary>
-    /// Interaction logic for RedunduncySummary.xaml
+    /// Interaction logic for DuplicatesSummary.xaml
     /// </summary>
-    public partial class RedunduncySummary : INotifyPropertyChanged
+    public partial class DuplicatesSummary : INotifyPropertyChanged
     {
         #region Nested types
 
@@ -109,7 +111,10 @@ namespace FileMatcher
             protected virtual void OnPropertyChanged(string propertyName = null)
             {
                 var handler = PropertyChanged;
-                if (handler != null) handler(this, new PropertyChangedEventArgs(propertyName));
+                if (handler != null)
+                {
+                    handler(this, new PropertyChangedEventArgs(propertyName));
+                }
             }
 
             private void UpdateFilter()
@@ -124,26 +129,41 @@ namespace FileMatcher
 
         #region Fields
 
-        private readonly Dictionary<int, int> _firstIndexOfGroup = new Dictionary<int, int>();
         private int _currOp;
-        private readonly List<String> _lastColumnsClicked = new List<string>();
+        private readonly List<string> _lastColumnsClicked = new List<string>();
         private readonly List<bool> _ascendingOrdescending = new List<bool>();
         private readonly List<FileInfoEx> _filesToShortcut = new List<FileInfoEx>();
+        private double _progressPercentage;
+        private string _status;
+
+        private bool _isSearching;
+        private string _pauseButtonTitle;
 
         #endregion
 
         #region Constructors
 
-        public RedunduncySummary()
+        public DuplicatesSummary(FileMatcherWorkingObject fmwo)
         {
-            IdenticalFiles = new IdenticalFileList();
             UserCommands = new List<UserCommand>();
             _currOp = 0;
             InitializeComponent();
+
+            ProgressPercentage = 0;
+            FileMatcherWorkingObject = fmwo;
+            fmwo.FileMatcher.ProgressUpdated += FileMatcherOnUpdateProgress;
+            fmwo.FileMatcher.StatusUpdated += FileMatcherOnUpdateStatus;
+            var adaptor = fmwo.FileMatcher.Adaptor;
+            Updater = new IdenticalFileListUpdater(adaptor, Dispatcher);
+            IdenticalFiles = Updater.IdenticalFileList;
             Filter = new ViewFilter(IdenticalFiles, LvRedundant);
             LvRedundant.ItemsSource = IdenticalFiles;
+
             DataContext = this;
             DeleteToRecycleBin = true;
+
+            IsSearching = true;
+            PauseButtonTitle = Strings.PauseSearch;
         }
 
         #endregion
@@ -159,7 +179,7 @@ namespace FileMatcher
         #endregion
 
         #region Properties
-
+        
         public IdenticalFileList IdenticalFiles { get; private set; }
 
         private List<UserCommand> UserCommands { get; set; }
@@ -174,34 +194,83 @@ namespace FileMatcher
             get { return _currOp < UserCommands.Count; }
         }
 
+        public bool IsSearching
+        {
+            get { return _isSearching; }
+            set
+            {
+                if (_isSearching != value)
+                {
+                    _isSearching = value;
+                    RaisePropertyChangedEvent("IsSearching");
+                }
+            }
+        }
+
+        public string PauseButtonTitle
+        {
+            get { return _pauseButtonTitle; }
+            set
+            {
+                if (_pauseButtonTitle != value)
+                {
+                    _pauseButtonTitle = value;
+                    RaisePropertyChangedEvent("PauseButtonTitle");
+                }
+            }
+        }
+
+        public FileMatcherWorkingObject FileMatcherWorkingObject { get; private set; }
+
         public ViewFilter Filter { get; private set; }
 
         public bool DeleteToRecycleBin { get; private set; }
+
+        public DynamicFileGroupAdaptor Adaptor { get; private set; }
+
+        public IdenticalFileListUpdater Updater { get; private set; }
+
+        public double ProgressPercentage
+        {
+            get
+            {
+                return _progressPercentage;
+            }
+            set
+            {
+                if (_progressPercentage != value)
+                {
+                    _progressPercentage = value;
+                    RaisePropertyChangedEvent("ProgressPercentage");
+                }
+            }
+        }
+
+        /// <summary>
+        ///  One line status suitable to display on the status bar
+        /// </summary>
+        public string Status
+        {
+            get { return _status; }
+            set
+            {
+                if (_status != value)
+                {
+                    _status = value;
+                    RaisePropertyChangedEvent("Status");
+                }
+            }
+        }
 
         #endregion
 
         #region Methods
 
-        public void InitializeDialog(List<IdenticalFiles> igs)
+        public void InitializeDialog()
         {
-            var groupId = 1;
-
-            // reverse iteration produces groups with size in descending order
-            for (var i = igs.Count - 1; i >= 0; i--)
-            {
-                var ig = igs[i];
-                if (ig.Count < 1) continue;
-                _firstIndexOfGroup[groupId] = IdenticalFiles.Count;
-                foreach (var f in ig)
-                {
-                    var fex = new FileInfoEx(f) {GroupId = groupId};
-                    IdenticalFiles.Add(fex);
-                }
-                groupId++;
-            }
             Filter.Update();
 
-            // populate the initial sorting precedence list
+            // populate the initial sorting precedence list with paths (properties of FileInfoEx)
             _lastColumnsClicked.Add("State");
             _lastColumnsClicked.Add("DirectoryName");
             _lastColumnsClicked.Add("Name");
@@ -211,7 +280,7 @@ namespace FileMatcher
 
             UpdateSorting();
         }
-
+        
         private void LvRedundant_OnDataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
             AddGrouping();
@@ -246,11 +315,11 @@ namespace FileMatcher
                 where delop.ActionType == DeleteOrUndeleteOperation.ActionTypes.Delete
                 select delop.File).ToList();
 
-            foreach (var groupId in filesToDelete.Select(fileToDelete => fileToDelete.GroupId)
-                .Where(groupId => !processedGroups.Contains(groupId)))
+            foreach (var fileToDelete in filesToDelete.Where(f => !processedGroups.Contains(f.GroupId)))
             {
+                var groupId = fileToDelete.GroupId;
                 processedGroups.Add(groupId);
-                var start = _firstIndexOfGroup[groupId];
+                var start = IdenticalFiles.FindGroupStart(fileToDelete);
                 var allDelete = true;
                 for (var i = start; i < IdenticalFiles.Count && IdenticalFiles[i].GroupId == groupId; i++)
                 {
@@ -393,17 +462,6 @@ namespace FileMatcher
                 IdenticalFiles.RemoveAt(index);
             }
 
-            // updates _firstIndexOfGroup
-            _firstIndexOfGroup.Clear();
-            var groupId = -1; // a group that doesn't exist
-            for (var index = 0; index < IdenticalFiles.Count; index++)
-            {
-                var f = IdenticalFiles[index];
-                if (f.GroupId == groupId) continue;
-                _firstIndexOfGroup[f.GroupId] = index;
-                groupId = f.GroupId;
-            }
-
             UserCommands.Clear();
             _currOp = 0;
             UpdateUndoRedoable();
@@ -505,12 +563,14 @@ namespace FileMatcher
 
             // check if all files are from the same group
             var groupId = -1;
+            FileInfoEx fileWithGroupId = null;
             foreach (var sel in LvRedundant.SelectedItems)
             {
                 var fex = (FileInfoEx) sel;
                 if (groupId == -1)
                 {
                     groupId = fex.GroupId;
+                    fileWithGroupId = fex;
                 }
                 else if (groupId != fex.GroupId)
                 {
@@ -521,7 +581,8 @@ namespace FileMatcher
 
             // then check if there are remaining items in the group other than the 
             // selected files and those that have been chosen to delete
-            var start = _firstIndexOfGroup[groupId];
+
+            var start = IdenticalFiles.FindGroupStart(fileWithGroupId);
             var deleteAll = true;
             for (var i = start; i < IdenticalFiles.Count && IdenticalFiles[i].GroupId == groupId; i++)
             {
@@ -576,9 +637,11 @@ namespace FileMatcher
         {
             var header = e.OriginalSource as GridViewColumnHeader;
             if (header == null) return;
-
-            var headerTitle = header.Column.Header as string;
-            if (headerTitle != "Name" && headerTitle != "DirectoryName" && headerTitle != "State")
+            
+            var binding = header.Column.DisplayMemberBinding as Binding;
+            if (binding == null) return;
+            var bindingPath = binding.Path.Path;
+            if (bindingPath != "Name" && bindingPath != "DirectoryName" && bindingPath != "State")
             {
                 return;
             }
@@ -586,13 +649,13 @@ namespace FileMatcher
             var isAscending = false;
             for (var i = 0; i < _lastColumnsClicked.Count; i++)
             {
-                if (_lastColumnsClicked[i] != headerTitle) continue;
+                if (_lastColumnsClicked[i] != bindingPath) continue;
                 _lastColumnsClicked.RemoveAt(i);
                 isAscending = _ascendingOrdescending[i];
                 _ascendingOrdescending.RemoveAt(i);
                 break;
             }
-            _lastColumnsClicked.Add(headerTitle);
+            _lastColumnsClicked.Add(bindingPath);
             _ascendingOrdescending.Add(!isAscending);
 
             UpdateSorting();
@@ -745,8 +808,7 @@ namespace FileMatcher
 
             sortDesc.Clear();
 
-            // The first sorting criterion has to be GroupId so the groups will display in order;
-            // this guarantees sorting by size in descending order
+            sortDesc.Add(new SortDescription("Length", ListSortDirection.Descending));
             sortDesc.Add(new SortDescription("GroupId", ListSortDirection.Ascending));
 
             for (var i = _lastColumnsClicked.Count - 1; i >= 0; i--)
@@ -779,8 +841,90 @@ namespace FileMatcher
 
             UpdateUndoRedoable();
         }
+        private void RaisePropertyChangedEvent(string propertyName)
+        {
+            if (PropertyChanged != null)
+            {
+                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+            }
+        }
+
+        private void FileMatcherOnUpdateProgress(object sender)
+        {
+            var fm = FileMatcherWorkingObject.FileMatcher;
+            Dispatcher.Invoke(() =>
+            {
+                ProgressPercentage = fm.Progress * 100;
+                UpdateScanningStatus();
+            });
+        }
+
+        private void FileMatcherOnUpdateStatus(object sender)
+        {
+            var fm = FileMatcherWorkingObject.FileMatcher;
+            Dispatcher.Invoke(() =>
+            {
+                if (FileMatcherWorkingObject.Canceller.Canceled)
+                {
+                    Status = Strings.StatusCanceled;
+                    ProgressPercentage = 100;
+                    IsSearching = false;
+                }
+                else
+                {
+                    switch (fm.Status)
+                    {
+                        case FileMatcherLib.FileMatcher.Statuses.Done:
+                            Status = Strings.StatusDone;
+                            ProgressPercentage = 100;
+                            IsSearching = false;
+                            break;
+                        case FileMatcherLib.FileMatcher.Statuses.Scanning:
+                            UpdateScanningStatus();
+                            break;
+                        case FileMatcherLib.FileMatcher.Statuses.CleaningUp:
+                            Status = Strings.StatusCleanup;
+                            break;
+                    }
+                }
+            });
+        }
+
+        private void UpdateScanningStatus()
+        {
+            var fm = FileMatcherWorkingObject.FileMatcher;
+            var progressStr = string.Format(Strings.SearchProgressUpdateFormat, fm.NumDuplicateGroups,
+                                fm.NumDuplicates, fm.TotalDuplicateBytes, fm.NumFilesAdded, fm.NumFilesFound);
+            Status = string.Format("{0} {1}", FileMatcherWorkingObject.Canceller.Paused ?
+                Strings.StatusPaused : Strings.StatusSearching, progressStr);
+        }
+
+        private void MiPauseOnClick(object sender, RoutedEventArgs e)
+        {
+            var paused = !FileMatcherWorkingObject.Canceller.Paused;
+            FileMatcherWorkingObject.Canceller.Paused = paused;
+            PauseButtonTitle = paused ? "Resume Search" : "Pause Search";
+            FileMatcherOnUpdateStatus(this);
+        }
+
+        private void MiStopOnClick(object sender, RoutedEventArgs e)
+        {
+            var choice = MessageBox.Show(Strings.FileMatchingToCancel, Strings.Alert, MessageBoxButton.YesNo);
+            if (choice == MessageBoxResult.Yes)
+            {
+                FileMatcherWorkingObject.Canceller.Canceled = true;
+                FileMatcherOnUpdateStatus(this);
+            }
+        }
+
+        private void Window_Closing(object sender, CancelEventArgs e)
+        {
+            if (FileMatcherWorkingObject.FileMatcher.Status != FileMatcherLib.FileMatcher.Statuses.Done)
+            {
+                FileMatcherWorkingObject.Canceller.Canceled = true;
+            }
+        }
 
         #endregion
-
     }
 }

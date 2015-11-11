@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 
 namespace FileMatcherLib
@@ -8,14 +9,22 @@ namespace FileMatcherLib
     /// <summary>
     ///  enumerates all files in the specified starting directory and its subdirectories
     /// </summary>
-    public class FileScanner : IEnumerable<FileInfo>
+    public class FileScanner : IEnumerable<FileInfo>, INotifyPropertyChanged
     {
+        #region Delegates
+
+        public delegate void UpdatedEventHandler();
+
+        #endregion
+
         #region Fields
 
         /// <summary>
         ///  starting dirctory of the scanning
         /// </summary>
         private readonly DirectoryInfo _startingDir;
+
+        private DirectoryInfo _currentDirectory;
 
         #endregion
 
@@ -26,8 +35,8 @@ namespace FileMatcherLib
         /// </summary>
         /// <param name="startingPath">The path to the starting directory</param>
         /// <param name="updateStatus">Delegate that updates the status to the progress displaying UI</param>
-        public FileScanner(string startingPath, UpdateStatusDelegate updateStatus)
-            : this(new DirectoryInfo(startingPath), updateStatus)
+        public FileScanner(string startingPath)
+            : this(new DirectoryInfo(startingPath))
         {
         }
 
@@ -36,20 +45,39 @@ namespace FileMatcherLib
         /// </summary>
         /// <param name="startingDir">The starting directory</param>
         /// <param name="updateStatus">Delegate that updates the status to the progress displaying UI</param>
-        public FileScanner(DirectoryInfo startingDir, UpdateStatusDelegate updateStatus)
+        public FileScanner(DirectoryInfo startingDir)
         {
             _startingDir = startingDir;
-            UpdateStatus = updateStatus;
         }
 
         #endregion
 
         #region Properties
 
+        #region INotifyPropertyChanged members
+
         /// <summary>
-        ///  Delegate that update status to the UI
+        ///  event that updates status to the UI
         /// </summary>
-        public UpdateStatusDelegate UpdateStatus { get; private set; }
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        #endregion
+
+        public DirectoryInfo CurrentDirectory
+        {
+            get
+            {
+                return _currentDirectory;
+            }
+            private set
+            {
+                if (_currentDirectory != value)
+                {
+                    _currentDirectory = value;
+                    RaisePropertyChanged("CurrentDirectory");
+                }
+            }
+        }
 
         #endregion
 
@@ -118,16 +146,20 @@ namespace FileMatcherLib
         {
             try
             {
-                if (UpdateStatus != null)
-                {
-                    var msg = string.Format(Strings.ScanningDirectory+"\n", d.FullName);
-                    UpdateStatus(msg);
-                }
+                CurrentDirectory = d;
                 return d.EnumerateFiles();
             }
             catch (Exception)
             {
                 return new FileInfo[0];
+            }
+        }
+
+        private void RaisePropertyChanged(string property)
+        {
+            if (PropertyChanged != null)
+            {
+                PropertyChanged(this, new PropertyChangedEventArgs(property));
             }
         }
 

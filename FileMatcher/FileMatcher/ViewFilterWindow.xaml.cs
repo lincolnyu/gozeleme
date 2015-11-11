@@ -7,7 +7,7 @@
     {
         #region Constructors
 
-        public ViewFilterWindow(RedunduncySummary.ViewFilter fileterViewModel)
+        public ViewFilterWindow(DuplicatesSummary.ViewFilter fileterViewModel)
         {
             InitializeComponent();
             DataContext = fileterViewModel;

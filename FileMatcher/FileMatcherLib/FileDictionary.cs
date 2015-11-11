@@ -10,6 +10,38 @@ namespace FileMatcherLib
     /// </summary>
     public class FileDictionary
     {
+        #region Delegates
+
+        public delegate void DictionaryAddedEventHandler(object sender, DictionaryAddedEventArgs args);
+
+        #endregion
+
+        #region Nested types
+
+        public class DictionaryAddedEventArgs : EventArgs
+        {
+            public DictionaryAddedEventArgs(int hash, int index, FileInfo file)
+            {
+                Hash = hash;
+                Index = index;
+                File = file;
+            }
+
+            public int Hash { get; private set; }
+
+            /// <summary>
+            ///  File added
+            /// </summary>
+            public FileInfo File { get; private set; }
+
+            /// <summary>
+            ///  Index of the identical file group
+            /// </summary>
+            public int Index { get; private set; }
+        }
+
+        #endregion
+
         #region Fields
 
         /// <summary>
@@ -47,6 +79,11 @@ namespace FileMatcherLib
 
         #region Properties
 
+        public List<IdenticalFiles> this[int key]
+        {
+            get { return _innerDictionary[key]; }
+        }
+
         /// <summary>
         ///  Number of duplicate files not including the single copy for each
         /// </summary>
@@ -64,7 +101,22 @@ namespace FileMatcherLib
 
         #endregion
 
+        #region Event handlers
+
+        public event DictionaryAddedEventHandler DictionaryAdded;
+
+        #endregion
+
         #region Methods
+
+        private void RaiseDictionaryAddedEvent(int hash, int index, FileInfo file)
+        {
+            if (DictionaryAdded != null)
+            {
+                var args = new DictionaryAddedEventArgs(hash, index, file);
+                DictionaryAdded(this, args);
+            }
+        }
 
         /// <summary>
         ///  Adds a file to the dictionary
@@ -120,6 +172,7 @@ namespace FileMatcherLib
                     }
                 }
             }
+            RaiseDictionaryAddedEvent(key, index, fileInfo);
         }
 
         /// <summary>

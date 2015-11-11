@@ -134,8 +134,8 @@
     <value>Directory Name</value>
     <comment>The file location field</comment>
   </data>
-  <data name="FileMatchingCanceledByUser" xml:space="preserve">
-    <value>File matchinng process cancelled by user, incomplete result will be displayed.</value>
+  <data name="FileMatchingToCancel" xml:space="preserve">
+    <value>If you cacnel the searching process, incomplete result will be displayed. Are you sure?</value>
   </data>
   <data name="GroupId" xml:space="preserve">
     <value>Group Id</value>
@@ -178,5 +178,32 @@
   </data>
   <data name="Cancelling" xml:space="preserve">
     <value>Cancelling...</value>
+  </data>
+  <data name="CurrentDirectoryUpdate" xml:space="preserve">
+    <value>Currently scanning {0}...</value>
+  </data>
+  <data name="SearchProgressUpdateFormat" xml:space="preserve">
+    <value>{0} files with totally {1} duplicates in {2:0,000} bytes; {3} files processed out of {4}.</value>
+  </data>
+  <data name="StatusCleanup" xml:space="preserve">
+    <value>Cleaning up...</value>
+  </data>
+  <data name="StatusDone" xml:space="preserve">
+    <value>Search complete.</value>
+  </data>
+  <data name="StatusSearching" xml:space="preserve">
+    <value>Searching...</value>
+  </data>
+  <data name="StatusCanceled" xml:space="preserve">
+    <value>Search canceled by user before completion, incomplete result displayed.</value>
+  </data>
+  <data name="StatusPaused" xml:space="preserve">
+    <value>Paused...</value>
+  </data>
+  <data name="PauseSearch" xml:space="preserve">
+    <value>Pause Search</value>
+  </data>
+  <data name="ResumeSearch" xml:space="preserve">
+    <value>Resume Search</value>
   </data>
 </root>
