@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
-namespace FileMatcherLib
+namespace FileMatcher
 {
     /// <summary>
     ///  A dictionary that maps a key hashed from FileInfo to a list of identical file groups that share this key

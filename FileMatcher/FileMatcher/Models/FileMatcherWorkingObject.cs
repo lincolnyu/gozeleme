@@ -1,7 +1,7 @@
 ﻿using System.Threading;
-using FileMatcherLib;
+using FileMatcher;
 
-namespace FileMatcher.Models
+namespace FileMatcherApp.Models
 {
     public class FileMatcherWorkingObject
     {
@@ -18,7 +18,7 @@ namespace FileMatcher.Models
 
         #region Properties
 
-        public FileMatcherLib.FileMatcher FileMatcher { get; set; }
+        public FileMatcher.FileMatcher FileMatcher { get; set; }
 
         //public ProgressDialog ProgressDialog { get; set; }
 

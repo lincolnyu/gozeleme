@@ -1,11 +1,11 @@
-﻿using FileMatcherLib;
+﻿using FileMatcher;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
 using System.IO;
 using System.Windows.Threading;
 
-namespace FileMatcher.FileGrouping
+namespace FileMatcherApp.FileGrouping
 {
     public class IdenticalFileListUpdater
     {

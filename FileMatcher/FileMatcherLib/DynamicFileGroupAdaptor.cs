@@ -1,8 +1,8 @@
 ﻿using System.Collections.ObjectModel;
-using FileMatcherLib.Collections;
+using FileMatcher.Collections;
 using System;
 
-namespace FileMatcherLib
+namespace FileMatcher
 {
     /// <summary>
     ///  Adapts IdenticalFileGroups (linear) to FileDictionary

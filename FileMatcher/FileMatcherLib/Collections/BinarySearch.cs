@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace FileMatcherLib.Collections
+namespace FileMatcher.Collections
 {
     /// <summary>
     ///  A binary search algorithm class

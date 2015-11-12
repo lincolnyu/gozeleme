@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 
-namespace FileMatcherLib
+namespace FileMatcher
 {
     /// <summary>
     ///  enumerates all files in the specified starting directory and its subdirectories

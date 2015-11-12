@@ -1,7 +1,7 @@
 ﻿using System.Globalization;
 using System.Windows.Controls;
 
-namespace FileMatcher.Models
+namespace FileMatcherApp.Models
 {
     public class PercentSizeValidationRule : ValidationRule
     {

@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace FileMatcher.Controllers
+namespace FileMatcherApp.Controllers
 {
     public class UserCommand
     {

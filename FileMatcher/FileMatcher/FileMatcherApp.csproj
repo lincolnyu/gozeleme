@@ -7,7 +7,7 @@
     <ProjectGuid>{FBC4D53F-6CD9-47FC-B832-70F0AFCEA59A}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>FileMatcher</RootNamespace>
+    <RootNamespace>FileMatcherApp</RootNamespace>
     <AssemblyName>DuplicateFileLocator</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -189,9 +189,9 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\FileMatcherLib\FileMatcherLib.csproj">
+    <ProjectReference Include="..\FileMatcherLib\FileMatcher.csproj">
       <Project>{4983ec14-ab0d-4702-9376-69540f618ad5}</Project>
-      <Name>FileMatcherLib</Name>
+      <Name>FileMatcher</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

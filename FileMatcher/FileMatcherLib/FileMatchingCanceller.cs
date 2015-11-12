@@ -1,4 +1,4 @@
-﻿namespace FileMatcherLib
+﻿namespace FileMatcher
 {
     /// <summary>
     ///  an object that indicates if the file matching process is to be cancelled by the user

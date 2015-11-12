@@ -1,6 +1,6 @@
-﻿<Window x:Class="FileMatcher.DuplicatesSummary"
+﻿<Window x:Class="FileMatcherApp.DuplicatesSummary"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:local="clr-namespace:FileMatcher"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:local="clr-namespace:FileMatcherApp"
         Title="Duplicates Summary" Height="536" Width="679" ResizeMode="CanResizeWithGrip"
         Closing="Window_Closing">
     <Window.CommandBindings>

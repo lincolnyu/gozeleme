@@ -1,7 +1,7 @@
-﻿<Window x:Class="FileMatcher.ViewFilterWindow"
+﻿<Window x:Class="FileMatcherApp.ViewFilterWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
-        xmlns:fileMatcher="clr-namespace:FileMatcher" xmlns:rules="clr-namespace:FileMatcher.Models"
+        xmlns:fileMatcher="clr-namespace:FileMatcherApp" xmlns:rules="clr-namespace:FileMatcherApp.Models"
         Title="Filter" Height="123" Width="300">
     <Grid>
         <Slider Name="SliderPercentSize"  HorizontalAlignment="Left" Margin="10,45,0,0" VerticalAlignment="Top" Width="272" 

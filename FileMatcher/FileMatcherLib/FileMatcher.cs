@@ -4,7 +4,7 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Threading;
 
-namespace FileMatcherLib
+namespace FileMatcher
 {
     /// <summary>
     ///  The class that invokes file scanner for enumeration of files and uses FileDictionary to 

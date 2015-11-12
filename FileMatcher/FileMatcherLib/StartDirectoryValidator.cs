@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
-namespace FileMatcherLib
+namespace FileMatcher
 {
     /// <summary>
     ///  A class that removes redudant sub-directories from a collection of directories

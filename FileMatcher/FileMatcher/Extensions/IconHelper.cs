@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Drawing;
 
-namespace FileMatcher.Extensions
+namespace FileMatcherApp.Extensions
 {
     public static class IconHelper
     {

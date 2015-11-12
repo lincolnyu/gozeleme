@@ -1,6 +1,6 @@
 ﻿using System.Runtime.InteropServices;
 
-namespace FileMatcher.Extensions
+namespace FileMatcherApp.Extensions
 {
     public static class Win32Structs
     {

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 
-namespace FileMatcher.Extensions
+namespace FileMatcherApp.Extensions
 {
     [ComImport]
     [Guid("0000010B-0000-0000-C000-000000000046")]

@@ -1,4 +1,4 @@
-﻿namespace FileMatcher.Controllers
+﻿namespace FileMatcherApp.Controllers
 {
     public interface IOperation
     {

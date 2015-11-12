@@ -1,18 +1,16 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Forms;
-using FileMatcher.Extensions;
-using FileMatcher.Models;
-using FileMatcher.Properties;
+using FileMatcherApp.Extensions;
+using FileMatcherApp.Models;
 using DragEventArgs = System.Windows.DragEventArgs;
 using MessageBox = System.Windows.MessageBox;
 
-namespace FileMatcher
+namespace FileMatcherApp
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
@@ -24,8 +22,7 @@ namespace FileMatcher
         public MainWindow()
         {
             InitializeComponent();
-            Title = Strings.AppName + Strings.VersionOpeningBracket
-                    + GetRunningVersion() + " Beta" + Strings.VersionClosingBracket;
+            SetTitle();
         }
 
         #endregion
@@ -59,7 +56,7 @@ namespace FileMatcher
         {
             var folders = (from ListBoxItem item in LstFolders.Items select (string) item.Content).ToList();
 
-            var fm =  new FileMatcherLib.FileMatcher(folders);
+            var fm =  new FileMatcher.FileMatcher(folders);
 
             if (fm.StartingDirectories.Count < folders.Count)
             {
@@ -160,25 +157,27 @@ namespace FileMatcher
             fmwo.Finish.Set();
         }
 
-        private string GetRunningVersion()
+        /// <summary>
+        ///  Sets app title as per app name and version
+        /// </summary>
+        /// <remarks>
+        ///  References:
+        ///  1. http://stackoverflow.com/questions/22527830/how-to-get-the-publish-version-of-a-wpf-application
+        /// </remarks>
+        private void SetTitle()
         {
             try
             {
-                return System.Deployment.Application.ApplicationDeployment.CurrentDeployment.CurrentVersion.ToString();
+                var ver = System.Deployment.Application.ApplicationDeployment.CurrentDeployment.
+                    CurrentVersion;
+                Title = string.Format("{0} (Ver {1}.{2} Beta)", Strings.AppName, ver.Major, ver.Minor);
             }
-            catch
+            catch (System.Deployment.Application.InvalidDeploymentException)
             {
-                try
-                {
-                    return Settings.Default.PublishVersion;
-                }
-                catch (Exception)
-                {
-                    return Assembly.GetExecutingAssembly().GetName().Version.ToString();
-                }
+                var ver = Assembly.GetExecutingAssembly().GetName().Version;
+                Title = string.Format("{0} (Asm Ver {1}.{2} Beta)", Strings.AppName, ver.Major, ver.Minor);
             }
         }
-
 
         #endregion
     }

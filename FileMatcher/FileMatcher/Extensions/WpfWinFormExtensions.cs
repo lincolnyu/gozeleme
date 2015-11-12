@@ -4,7 +4,7 @@ using System.Windows.Interop;
 using System.Windows.Media;
 using IWin32Window = System.Windows.Forms.IWin32Window;
 
-namespace FileMatcher.Extensions
+namespace FileMatcherApp.Extensions
 {
     /// <summary>
     ///  Old winform wrapper for WPF

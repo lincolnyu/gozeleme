@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 
-namespace FileMatcher.Extensions
+namespace FileMatcherApp.Extensions
 {
     /// <summary>
     ///  Send files directly to the recycle bin. 

@@ -8,13 +8,13 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
-using FileMatcher.Controllers;
-using FileMatcher.Extensions;
-using FileMatcherLib;
-using FileMatcher.Models;
-using FileMatcher.FileGrouping;
+using FileMatcherApp.Controllers;
+using FileMatcherApp.Extensions;
+using FileMatcher;
+using FileMatcherApp.Models;
+using FileMatcherApp.FileGrouping;
 
-namespace FileMatcher
+namespace FileMatcherApp
 {
     /// <summary>
     /// Interaction logic for DuplicatesSummary.xaml
@@ -874,15 +874,15 @@ namespace FileMatcher
                 {
                     switch (fm.Status)
                     {
-                        case FileMatcherLib.FileMatcher.Statuses.Done:
+                        case FileMatcher.FileMatcher.Statuses.Done:
                             Status = Strings.StatusDone;
                             ProgressPercentage = 100;
                             IsSearching = false;
                             break;
-                        case FileMatcherLib.FileMatcher.Statuses.Scanning:
+                        case FileMatcher.FileMatcher.Statuses.Scanning:
                             UpdateScanningStatus();
                             break;
-                        case FileMatcherLib.FileMatcher.Statuses.CleaningUp:
+                        case FileMatcher.FileMatcher.Statuses.CleaningUp:
                             Status = Strings.StatusCleanup;
                             break;
                     }
@@ -919,7 +919,7 @@ namespace FileMatcher
 
         private void Window_Closing(object sender, CancelEventArgs e)
         {
-            if (FileMatcherWorkingObject.FileMatcher.Status != FileMatcherLib.FileMatcher.Statuses.Done)
+            if (FileMatcherWorkingObject.FileMatcher.Status != FileMatcher.FileMatcher.Statuses.Done)
             {
                 FileMatcherWorkingObject.Canceller.Canceled = true;
             }

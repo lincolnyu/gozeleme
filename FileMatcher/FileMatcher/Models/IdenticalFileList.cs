@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.IO;
 
-namespace FileMatcher
+namespace FileMatcherApp
 {
     /// <summary>
     ///  A class that keeps all files that have duplicates

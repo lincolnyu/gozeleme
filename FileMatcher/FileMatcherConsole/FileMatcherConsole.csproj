@@ -52,9 +52,9 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\FileMatcherLib\FileMatcherLib.csproj">
+    <ProjectReference Include="..\FileMatcherLib\FileMatcher.csproj">
       <Project>{4983ec14-ab0d-4702-9376-69540f618ad5}</Project>
-      <Name>FileMatcherLib</Name>
+      <Name>FileMatcher</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

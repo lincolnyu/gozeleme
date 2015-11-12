@@ -1,6 +1,6 @@
 ﻿using System.IO;
 
-namespace FileMatcherLib
+namespace FileMatcher
 {
     public interface IFileHash
     {

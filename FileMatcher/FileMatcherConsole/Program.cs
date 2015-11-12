@@ -1,6 +1,6 @@
 ﻿using System;
 using System.IO;
-using FileMatcherLib;
+using FileMatcher;
 using System.Collections.Specialized;
 
 namespace FileMatcherConsole
@@ -24,7 +24,7 @@ namespace FileMatcherConsole
                 return;
             }
 
-            var fm = new FileMatcher(args);
+            var fm = new FileMatcher.FileMatcher(args);
             Console.WriteLine(@"Searching identical files in folders, ");
             foreach (var sd in fm.StartingDirectories)
             {

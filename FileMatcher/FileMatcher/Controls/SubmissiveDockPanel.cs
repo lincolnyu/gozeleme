@@ -1,7 +1,7 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
 
-namespace FileMatcher.Controls
+namespace FileMatcherApp.Controls
 {
     /// <summary>
     ///  This dock panel always comply with the size of its containing control

@@ -1,6 +1,6 @@
 ﻿using System.IO;
 
-namespace FileMatcherLib
+namespace FileMatcher
 {
     /// <summary>
     ///  a class that generates a key for a file

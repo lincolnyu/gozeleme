@@ -2,7 +2,7 @@
 using System.Collections.Specialized;
 using System.IO;
 
-namespace FileMatcherLib
+namespace FileMatcher
 {
     /// <summary>
     ///  contains all identical files

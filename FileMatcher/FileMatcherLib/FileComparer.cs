@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 
-namespace FileMatcherLib
+namespace FileMatcher
 {
     /// <summary>
     ///  Compares identical file groups first by their length and then their binary contents in dictionary order
