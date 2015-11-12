@@ -1,4 +1,6 @@
-﻿namespace FileMatcherApp
+﻿using FileMatcherApp.Filters;
+
+namespace FileMatcherApp.Views
 {
     /// <summary>
     /// Interaction logic for ViewFilter.xaml
@@ -7,7 +9,7 @@
     {
         #region Constructors
 
-        public ViewFilterWindow(DuplicatesSummary.ViewFilter filterViewModel)
+        public ViewFilterWindow(DuplicatesFilter filterViewModel)
         {
             InitializeComponent();
             DataContext = filterViewModel;

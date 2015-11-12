@@ -103,12 +103,12 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="CommandLibrary.cs" />
+    <Compile Include="Commands\CommandLibrary.cs" />
     <Compile Include="Controls\SubmissiveDockPanel.cs" />
     <Compile Include="FileGrouping\IdenticalFileListUpdater.cs" />
+    <Compile Include="Filters\DuplicatesFilter.cs" />
     <Compile Include="Models\FileMatcherWorkingObject.cs" />
     <Compile Include="Models\IProgressContext.cs" />
-    <Compile Include="Models\PercentSizeValidationRule.cs" />
     <Compile Include="Extensions\CShellLink.cs" />
     <Compile Include="Extensions\IconHelper.cs" />
     <Compile Include="Extensions\IPersistFile.cs" />
@@ -120,9 +120,10 @@
     <Compile Include="Controllers\DeleteOrUndeleteOperation.cs" />
     <Compile Include="Models\FileInfoEx.cs" />
     <Compile Include="Models\IdenticalFileList.cs" />
-    <Compile Include="DuplicatesSummary.xaml.cs">
+    <Compile Include="Views\DuplicatesSummary.xaml.cs">
       <DependentUpon>DuplicatesSummary.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Converters\NumericToStringConverter.cs" />
     <Compile Include="Strings.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -130,11 +131,11 @@
     </Compile>
     <Compile Include="Controllers\ShortcutOperation.cs" />
     <Compile Include="Controllers\UserCommand.cs" />
-    <Compile Include="ViewFilterWindow.xaml.cs">
+    <Compile Include="Views\ViewFilterWindow.xaml.cs">
       <DependentUpon>ViewFilterWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Extensions\WpfWinFormExtensions.cs" />
-    <Page Include="MainWindow.xaml">
+    <Page Include="Views\MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -142,15 +143,19 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="MainWindow.xaml.cs">
+    <Compile Include="Views\MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Page Include="DuplicatesSummary.xaml">
+    <Page Include="Views\DuplicatesSummary.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="ViewFilterWindow.xaml">
+    <Page Include="Resources\Base.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\ViewFilterWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -213,6 +218,9 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="MainIcon.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Rules\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

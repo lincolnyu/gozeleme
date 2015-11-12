@@ -1,4 +1,4 @@
-﻿<Window x:Class="FileMatcherApp.MainWindow"
+﻿<Window x:Class="FileMatcherApp.Views.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="Duplicate Files Finder" Height="350" Width="451.333"

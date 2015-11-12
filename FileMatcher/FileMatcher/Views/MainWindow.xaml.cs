@@ -10,7 +10,7 @@ using FileMatcherApp.Models;
 using DragEventArgs = System.Windows.DragEventArgs;
 using MessageBox = System.Windows.MessageBox;
 
-namespace FileMatcherApp
+namespace FileMatcherApp.Views
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml

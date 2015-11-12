@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
@@ -13,120 +12,15 @@ using FileMatcherApp.Extensions;
 using FileMatcher;
 using FileMatcherApp.Models;
 using FileMatcherApp.FileGrouping;
+using FileMatcherApp.Filters;
 
-namespace FileMatcherApp
+namespace FileMatcherApp.Views
 {
     /// <summary>
     /// Interaction logic for DuplicatesSummary.xaml
     /// </summary>
     public partial class DuplicatesSummary : INotifyPropertyChanged
     {
-        #region Nested types
-
-        public class ViewFilter : INotifyPropertyChanged
-        {
-            #region Fields
-
-            private double _percentSize;
-
-            #endregion
-
-            #region Constructors
-
-            public ViewFilter(IdenticalFileList files, ListView listView)
-            {
-                Files = files;
-                FileSizes = new long[99];
-                ListView = listView;
-                UpdateFilter();
-            }
-
-            #endregion
-
-            #region Properties
-
-            public double PercentSize
-            {
-                get { return _percentSize; }
-                set
-                {
-                    var iToSet = (int) Math.Round(value);
-                    var iCurr = (int) Math.Round(_percentSize);
-                    if (iToSet == iCurr) return;
-                    _percentSize = iToSet;
-                    OnPropertyChanged("PercentSize");
-                    UpdateFilter();
-                }
-            }
-
-            public IdenticalFileList Files { get; private set; }
-
-            public long[] FileSizes { get; private set; }
-
-            public ListView ListView { get; private set; }
-
-            #endregion
-
-            #region Events
-
-            public event PropertyChangedEventHandler PropertyChanged;
-
-            #endregion
-
-            #region Methods
-
-            public bool Filter(object o)
-            {
-                var fileInfo = (FileInfoEx) o;
-                var size = fileInfo.Length;
-
-                var percent = (int) Math.Round(PercentSize);
-                return (size >= FileSizes[percent]);
-            }
-
-            public void Update()
-            {
-                if (Files.Count > 0)
-                {
-                    var j = 0;
-                    for (var i = 1; i < 100; i++)
-                    {
-                        while (j*99 < i*Files.Count)
-                        {
-                            j++;
-                        }
-                        if (j >= Files.Count) j = Files.Count - 1; // this shouldn't happen; just for safety
-                        FileSizes[99 - i] = Files[j].Length; // reverse order
-                    }
-                }
-                else
-                {
-                    for (var i = 0; i < 99; i++)
-                    {
-                        FileSizes[i] = -1; // no files exist
-                    }
-                }
-            }
-
-            protected virtual void OnPropertyChanged(string propertyName = null)
-            {
-                var handler = PropertyChanged;
-                if (handler != null)
-                {
-                    handler(this, new PropertyChangedEventArgs(propertyName));
-                }
-            }
-
-            private void UpdateFilter()
-            {
-                ListView.Items.Filter = Filter;
-            }
-
-            #endregion
-        }
-
-        #endregion
-
         #region Fields
 
         private int _currOp;
@@ -138,6 +32,8 @@ namespace FileMatcherApp
 
         private bool _isSearching;
         private string _pauseButtonTitle;
+
+        private DuplicatesFilter _filter;
 
         #endregion
 
@@ -156,8 +52,9 @@ namespace FileMatcherApp
             var adaptor = fmwo.FileMatcher.Adaptor;
             Updater = new IdenticalFileListUpdater(adaptor, Dispatcher);
             IdenticalFiles = Updater.IdenticalFileList;
-            Filter = new ViewFilter(IdenticalFiles, LvRedundant);
             LvRedundant.ItemsSource = IdenticalFiles;
+            _filter = new DuplicatesFilter();
+            _filter.FilterChanged += FilterOnChanged;
 
             DataContext = this;
             DeleteToRecycleBin = true;
@@ -179,7 +76,7 @@ namespace FileMatcherApp
         #endregion
 
         #region Properties
-        
+
         public IdenticalFileList IdenticalFiles { get; private set; }
 
         private List<UserCommand> UserCommands { get; set; }
@@ -221,8 +118,6 @@ namespace FileMatcherApp
         }
 
         public FileMatcherWorkingObject FileMatcherWorkingObject { get; private set; }
-
-        public ViewFilter Filter { get; private set; }
 
         public bool DeleteToRecycleBin { get; private set; }
 
@@ -268,8 +163,6 @@ namespace FileMatcherApp
 
         public void InitializeDialog()
         {
-            Filter.Update();
-
             // populate the initial sorting precedence list with paths (properties of FileInfoEx)
             _lastColumnsClicked.Add("State");
             _lastColumnsClicked.Add("DirectoryName");
@@ -280,7 +173,7 @@ namespace FileMatcherApp
 
             UpdateSorting();
         }
-        
+
         private void LvRedundant_OnDataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
             AddGrouping();
@@ -293,7 +186,7 @@ namespace FileMatcherApp
                 return;
             }
 
-            var myView = (CollectionView) CollectionViewSource.GetDefaultView(LvRedundant.ItemsSource);
+            var myView = (CollectionView)CollectionViewSource.GetDefaultView(LvRedundant.ItemsSource);
             var groupDesc = new PropertyGroupDescription("GroupId");
             if (myView.GroupDescriptions != null)
             {
@@ -312,8 +205,8 @@ namespace FileMatcherApp
             var processedGroups = new HashSet<int>();
 
             var filesToDelete = (from delop in command.Operations.OfType<DeleteOrUndeleteOperation>()
-                where delop.ActionType == DeleteOrUndeleteOperation.ActionTypes.Delete
-                select delop.File).ToList();
+                                 where delop.ActionType == DeleteOrUndeleteOperation.ActionTypes.Delete
+                                 select delop.File).ToList();
 
             foreach (var fileToDelete in filesToDelete.Where(f => !processedGroups.Contains(f.GroupId)))
             {
@@ -434,10 +327,10 @@ namespace FileMatcherApp
                 var f = IdenticalFiles[i];
                 if (f.Shortcut != null)
                 {
-                    var shellLink = (IShellLinkW) new CShellLink();
+                    var shellLink = (IShellLinkW)new CShellLink();
                     shellLink.SetDescription(f.ShortcutName);
                     shellLink.SetPath(f.Shortcut.FullName);
-                    var linkFile = (IPersistFile) shellLink;
+                    var linkFile = (IPersistFile)shellLink;
                     var name = Path.Combine(f.DirectoryName, f.ShortcutName) + ".lnk";
                     linkFile.Save(name, true);
                     shortcutCount++;
@@ -476,12 +369,17 @@ namespace FileMatcherApp
 
         private void MiFilter_OnClick(object sender, RoutedEventArgs e)
         {
-            var vfw = new ViewFilterWindow(Filter)
+            var vfw = new ViewFilterWindow(_filter)
             {
                 Owner = this,
                 WindowStartupLocation = WindowStartupLocation.CenterOwner
             };
             vfw.Show();
+        }
+
+        private void FilterOnChanged()
+        {
+            LvRedundant.Items.Filter = _filter.Predicate;
         }
 
         private void OnCanExecuteOpenFolder(object sender, CanExecuteRoutedEventArgs e)
@@ -496,7 +394,7 @@ namespace FileMatcherApp
             {
                 return;
             }
-            var fex = (FileInfoEx) sel;
+            var fex = (FileInfoEx)sel;
             System.Diagnostics.Process.Start("explorer.exe", "/select,  \"" + fex.FullName + "\"");
         }
 
@@ -509,11 +407,11 @@ namespace FileMatcherApp
                 return;
             }
             var canDelete = false;
-// ReSharper disable LoopCanBeConvertedToQuery
+            // ReSharper disable LoopCanBeConvertedToQuery
             foreach (var sel in LvRedundant.SelectedItems)
-// ReSharper restore LoopCanBeConvertedToQuery
+            // ReSharper restore LoopCanBeConvertedToQuery
             {
-                var fex = (FileInfoEx) sel;
+                var fex = (FileInfoEx)sel;
                 if (fex.IsSelectedToDelete) continue;
                 canDelete = true;
                 break;
@@ -535,11 +433,11 @@ namespace FileMatcherApp
                 return;
             }
             var canUndelete = false;
-// ReSharper disable LoopCanBeConvertedToQuery
+            // ReSharper disable LoopCanBeConvertedToQuery
             foreach (var sel in LvRedundant.SelectedItems)
-// ReSharper restore LoopCanBeConvertedToQuery
+            // ReSharper restore LoopCanBeConvertedToQuery
             {
-                var fex = (FileInfoEx) sel;
+                var fex = (FileInfoEx)sel;
                 if (!fex.IsSelectedToDelete) continue;
                 canUndelete = true;
                 break;
@@ -566,7 +464,7 @@ namespace FileMatcherApp
             FileInfoEx fileWithGroupId = null;
             foreach (var sel in LvRedundant.SelectedItems)
             {
-                var fex = (FileInfoEx) sel;
+                var fex = (FileInfoEx)sel;
                 if (groupId == -1)
                 {
                     groupId = fex.GroupId;
@@ -606,7 +504,7 @@ namespace FileMatcherApp
             _filesToShortcut.Clear();
             foreach (var sel in LvRedundant.SelectedItems)
             {
-                var fex = (FileInfoEx) sel;
+                var fex = (FileInfoEx)sel;
                 _filesToShortcut.Add(fex);
             }
         }
@@ -637,7 +535,7 @@ namespace FileMatcherApp
         {
             var header = e.OriginalSource as GridViewColumnHeader;
             if (header == null) return;
-            
+
             var binding = header.Column.DisplayMemberBinding as Binding;
             if (binding == null) return;
             var bindingPath = binding.Path.Path;
@@ -813,8 +711,8 @@ namespace FileMatcherApp
 
             for (var i = _lastColumnsClicked.Count - 1; i >= 0; i--)
             {
-                sortDesc.Add(new SortDescription(_lastColumnsClicked[i], 
-                    _ascendingOrdescending[i]? ListSortDirection.Ascending : ListSortDirection.Descending));
+                sortDesc.Add(new SortDescription(_lastColumnsClicked[i],
+                    _ascendingOrdescending[i] ? ListSortDirection.Ascending : ListSortDirection.Descending));
             }
         }
 
@@ -909,7 +807,7 @@ namespace FileMatcherApp
 
         private void MiStopOnClick(object sender, RoutedEventArgs e)
         {
-            var choice = MessageBox.Show(Strings.FileMatchingToCancel, Strings.Alert, MessageBoxButton.YesNo);
+            var choice = MessageBox.Show(Strings.FileMatchingToCancel, Strings.Warning, MessageBoxButton.YesNo);
             if (choice == MessageBoxResult.Yes)
             {
                 FileMatcherWorkingObject.Canceller.Canceled = true;
@@ -925,6 +823,11 @@ namespace FileMatcherApp
             }
         }
 
+        private bool IsCompleted()
+        {
+            return FileMatcherWorkingObject.Canceller.Canceled 
+                || FileMatcherWorkingObject.FileMatcher.Status == FileMatcher.FileMatcher.Statuses.Done;
+        }
         #endregion
     }
 }

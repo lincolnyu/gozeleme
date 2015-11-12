@@ -1,6 +1,6 @@
 ﻿using System.Windows.Input;
 
-namespace FileMatcherApp
+namespace FileMatcherApp.Commands
 {
     public static class CommandLibrary
     {

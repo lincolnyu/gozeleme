@@ -61,7 +61,7 @@ namespace FileMatcherApp {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Alert.
+        ///   Looks up a localized string similar to Attention.
         /// </summary>
         internal static string Alert {
             get {
@@ -138,6 +138,15 @@ namespace FileMatcherApp {
         internal static string FileMatchingToCancel {
             get {
                 return ResourceManager.GetString("FileMatchingToCancel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Finish or cancel the search before applying filter.
+        /// </summary>
+        internal static string FilterConditions {
+            get {
+                return ResourceManager.GetString("FilterConditions", resourceCulture);
             }
         }
         
@@ -309,6 +318,15 @@ namespace FileMatcherApp {
         internal static string VersionOpeningBracket {
             get {
                 return ResourceManager.GetString("VersionOpeningBracket", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Warning.
+        /// </summary>
+        internal static string Warning {
+            get {
+                return ResourceManager.GetString("Warning", resourceCulture);
             }
         }
     }

@@ -117,8 +117,8 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="Alert" xml:space="preserve">
-    <value>Alert</value>
+  <data name="Warning" xml:space="preserve">
+    <value>Warning</value>
   </data>
   <data name="AllFilesInGroups" xml:space="preserve">
     <value>Warning: all files in file group(s) </value>
@@ -205,5 +205,11 @@
   </data>
   <data name="ResumeSearch" xml:space="preserve">
     <value>Resume Search</value>
+  </data>
+  <data name="FilterConditions" xml:space="preserve">
+    <value>Finish or cancel the search before applying filter</value>
+  </data>
+  <data name="Alert" xml:space="preserve">
+    <value>Attention</value>
   </data>
 </root>

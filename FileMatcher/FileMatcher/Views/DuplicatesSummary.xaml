@@ -1,16 +1,18 @@
-﻿<Window x:Class="FileMatcherApp.DuplicatesSummary"
+﻿<Window x:Class="FileMatcherApp.Views.DuplicatesSummary"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:local="clr-namespace:FileMatcherApp"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+        xmlns:local="clr-namespace:FileMatcherApp"
+        xmlns:commands="clr-namespace:FileMatcherApp.Commands"
         Title="Duplicates Summary" Height="536" Width="679" ResizeMode="CanResizeWithGrip"
         Closing="Window_Closing">
     <Window.CommandBindings>
-        <CommandBinding Command="local:CommandLibrary.OpenFolder" CanExecute="OnCanExecuteOpenFolder"
+        <CommandBinding Command="commands:CommandLibrary.OpenFolder" CanExecute="OnCanExecuteOpenFolder"
                         Executed="OnExecuteOpenFolder"/>
-        <CommandBinding Command="local:CommandLibrary.Delete" CanExecute="OnCanExecuteDelete"
+        <CommandBinding Command="commands:CommandLibrary.Delete" CanExecute="OnCanExecuteDelete"
                         Executed="OnExecuteDelete" />
-        <CommandBinding Command="local:CommandLibrary.Undelete" CanExecute="OnCanExecuteUndelete"
+        <CommandBinding Command="commands:CommandLibrary.Undelete" CanExecute="OnCanExecuteUndelete"
                         Executed="OnExecuteUndelete" />
-        <CommandBinding Command="local:CommandLibrary.Shortcut" CanExecute="OnCanExecuteShortcut"
+        <CommandBinding Command="commands:CommandLibrary.Shortcut" CanExecute="OnCanExecuteShortcut"
                         Executed="OnExecuteShortcut"/>
     </Window.CommandBindings>
     <DockPanel LastChildFill="True">
@@ -41,8 +43,8 @@
             </MenuItem>
                 <MenuItem Header="_Actions">
                 <MenuItem.Items>
-                    <MenuItem Name="MiDeleteSelected" Header="_Delete Selected" Command="local:CommandLibrary.Delete"></MenuItem>
-                    <MenuItem Name="MiUndeleteSelected" Header="_Undelete Selected" Command="local:CommandLibrary.Undelete"></MenuItem>
+                    <MenuItem Name="MiDeleteSelected" Header="_Delete Selected" Command="commands:CommandLibrary.Delete"></MenuItem>
+                    <MenuItem Name="MiUndeleteSelected" Header="_Undelete Selected" Command="commands:CommandLibrary.Undelete"></MenuItem>
                     <MenuItem Name="MiPickRepresentative" Header="Pick _Representative" IsCheckable="True" Click="MiPickRepresentative_OnClick"></MenuItem>
                     <MenuItem Name="MiPickSurvivor" Header="Delete Unpicked" IsCheckable="True" Click="MiPickSurvivor_OnClick"></MenuItem>
                 </MenuItem.Items>
@@ -57,9 +59,9 @@
             <DockPanel DockPanel.Dock="Top" Height="28">
                 <Button x:Name="BtnUndelSel" Content="Undelete Selected" HorizontalAlignment="Left"
                 VerticalAlignment="Top" Width="106" Height="20" DockPanel.Dock="Right" Margin="10,4,10,0"
-                Command="local:CommandLibrary.Undelete"/>
+                Command="commands:CommandLibrary.Undelete"/>
                 <Button Name="BtnDelSel" Content="Delete selected" HorizontalAlignment="Left" Margin="10,4,10,0"
-                        VerticalAlignment="Top" Width="106" Height="20" Command="local:CommandLibrary.Delete" DockPanel.Dock="Right"/>
+                        VerticalAlignment="Top" Width="106" Height="20" Command="commands:CommandLibrary.Delete" DockPanel.Dock="Right"/>
                 <Label Content="Files found with redundancy:" HorizontalAlignment="Left" Margin="10,4,0,0" VerticalAlignment="Top" 
                        DockPanel.Dock="Left" Height="26" Width="238"/>
             </DockPanel>
@@ -144,10 +146,10 @@
                 </ListView.View>
                 <ListView.ContextMenu>
                     <ContextMenu>
-                        <MenuItem Command="local:CommandLibrary.OpenFolder" Header="Open file location"/>
-                        <MenuItem Command="local:CommandLibrary.Delete" />
-                        <MenuItem Command="local:CommandLibrary.Undelete" />
-                        <MenuItem Command="local:CommandLibrary.Shortcut" />
+                        <MenuItem Command="commands:CommandLibrary.OpenFolder" Header="Open file location"/>
+                        <MenuItem Command="commands:CommandLibrary.Delete" />
+                        <MenuItem Command="commands:CommandLibrary.Undelete" />
+                        <MenuItem Command="commands:CommandLibrary.Shortcut" />
                     </ContextMenu>
                 </ListView.ContextMenu>
             </ListView>
