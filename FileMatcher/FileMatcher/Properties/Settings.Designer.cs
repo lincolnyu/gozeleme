@@ -22,14 +22,5 @@ namespace FileMatcherApp.Properties {
                 return defaultInstance;
             }
         }
-        
-        [global::System.Configuration.ApplicationScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("1.5.3")]
-        public string PublishVersion {
-            get {
-                return ((string)(this["PublishVersion"]));
-            }
-        }
     }
 }
