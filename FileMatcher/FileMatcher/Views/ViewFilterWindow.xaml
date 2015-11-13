@@ -1,7 +1,9 @@
 ﻿<Window x:Class="FileMatcherApp.Views.ViewFilterWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
-        xmlns:fileMatcher="clr-namespace:FileMatcherApp" xmlns:rules="clr-namespace:FileMatcherApp.Models"
+        xmlns:fileMatcher="clr-namespace:FileMatcherApp" 
+        xmlns:local="clr-namespace:FileMatcherApp"
+        xmlns:rules="clr-namespace:FileMatcherApp.Models"
         Title="Filter" Height="80" Width="300">
     <Window.Resources>
         <ResourceDictionary>
@@ -12,9 +14,11 @@
     </Window.Resources>
     <Grid>
         <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">
-            <CheckBox IsChecked="{Binding IsEnabled}">show only files with at least</CheckBox>
+            <CheckBox IsChecked="{Binding IsEnabled}">
+                <TextBlock Text="{x:Static local:Strings.FilterCriterion}"></TextBlock>
+            </CheckBox>
             <TextBox Width="60" Text="{Binding TotalDuplicateMbs, Converter={StaticResource NumericToStringConverter}}"></TextBox>
-            <TextBlock>MBs</TextBlock>
+            <TextBlock Text="{x:Static local:Strings.FilterCriterionTail}"></TextBlock>
         </StackPanel>
     </Grid>
 </Window>

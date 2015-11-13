@@ -73,7 +73,7 @@
             </StatusBar>
             <ListView Name="LvRedundant" Margin="10,0,0,10" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
                   ItemsSource="{Binding Path=IdenticalFiles}" 
-                    DataContextChanged="LvRedundant_OnDataContextChanged" 
+                    DataContextChanged="LvRedundantOnDataContextChanged" 
                       GridViewColumnHeader.Click="LvRedundantGridViewColumnHeaderOnClick"
                       SelectionChanged="LvRedundant_OnSelectionChanged" MouseDoubleClick="LvRedundant_OnMouseDoubleClick">
                 <ListView.Resources>

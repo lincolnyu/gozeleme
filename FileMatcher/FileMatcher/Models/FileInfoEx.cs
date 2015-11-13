@@ -28,6 +28,11 @@ namespace FileMatcherApp
             get { return _fileInfo.Length; }
         }
 
+        public int Duplicates
+        {
+            get; set;
+        } = 1;
+
         public string DisplayFileSize
         {
             get

@@ -151,6 +151,24 @@ namespace FileMatcherApp {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Show files with at least.
+        /// </summary>
+        public static string FilterCriterion {
+            get {
+                return ResourceManager.GetString("FilterCriterion", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to duplicate MBs.
+        /// </summary>
+        public static string FilterCriterionTail {
+            get {
+                return ResourceManager.GetString("FilterCriterionTail", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Group Id.
         /// </summary>
         internal static string GroupId {

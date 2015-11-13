@@ -212,4 +212,10 @@
   <data name="Alert" xml:space="preserve">
     <value>Attention</value>
   </data>
+  <data name="FilterCriterion" xml:space="preserve">
+    <value>Show files with at least</value>
+  </data>
+  <data name="FilterCriterionTail" xml:space="preserve">
+    <value>duplicate MBs</value>
+  </data>
 </root>

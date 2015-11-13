@@ -53,19 +53,69 @@ namespace FileMatcherApp
         public new void Insert(int index, FileInfoEx fileInfo)
         {
             base.Insert(index, fileInfo);
+            UpdateDuplicateCountForAdding(index);
             if (CollectionChanged != null)
             {
-                CollectionChanged(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, fileInfo));
+                CollectionChanged(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, fileInfo, index));
             }
         }
 
         public new void RemoveAt(int index)
         {
             var obj = this[index];
+            UpdateDuplicateCountPreRemoving(index);
             base.RemoveAt(index);
             if (CollectionChanged != null)
             {
                 CollectionChanged(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, obj, index));
+            }
+        }
+
+        private void UpdateDuplicateCountForAdding(int index)
+        {
+            var added = this[index];
+            added.Duplicates = 1;
+            for (var i = index - 1; i >= 0; i--)
+            {
+                var fi = this[i];
+                if (fi.GroupId != added.GroupId)
+                {
+                    break;
+                }
+                added.Duplicates = ++fi.Duplicates;
+            }
+            for (var i = index + 1; i < Count; i++)
+            {
+                var fi = this[i];
+                if (fi.GroupId != added.GroupId)
+                {
+                    break;
+                }
+                fi.Duplicates++;
+                added.Duplicates = ++fi.Duplicates;
+            }
+        }
+
+        private void UpdateDuplicateCountPreRemoving(int index)
+        {
+            var added = this[index];
+            for (var i = index - 1; i >= 0; i--)
+            {
+                var fi = this[i];
+                if (fi.GroupId != added.GroupId)
+                {
+                    break;
+                }
+                --fi.Duplicates;
+            }
+            for (var i = index + 1; i < Count; i++)
+            {
+                var fi = this[i];
+                if (fi.GroupId != added.GroupId)
+                {
+                    break;
+                }
+                --fi.Duplicates;
             }
         }
 

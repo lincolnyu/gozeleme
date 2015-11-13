@@ -13,6 +13,9 @@ using FileMatcher;
 using FileMatcherApp.Models;
 using FileMatcherApp.FileGrouping;
 using FileMatcherApp.Filters;
+using System;
+using System.Collections.Specialized;
+using System.Threading;
 
 namespace FileMatcherApp.Views
 {
@@ -35,6 +38,9 @@ namespace FileMatcherApp.Views
 
         private DuplicatesFilter _filter;
 
+        private Timer _filterUpdateTimer;
+        private bool _filterUpdateRequested;
+
         #endregion
 
         #region Constructors
@@ -52,6 +58,7 @@ namespace FileMatcherApp.Views
             var adaptor = fmwo.FileMatcher.Adaptor;
             Updater = new IdenticalFileListUpdater(adaptor, Dispatcher);
             IdenticalFiles = Updater.IdenticalFileList;
+            IdenticalFiles.CollectionChanged += IdenticalFilesOnCollectionChanged;
             LvRedundant.ItemsSource = IdenticalFiles;
             _filter = new DuplicatesFilter();
             _filter.FilterChanged += FilterOnChanged;
@@ -61,6 +68,8 @@ namespace FileMatcherApp.Views
 
             IsSearching = true;
             PauseButtonTitle = Strings.PauseSearch;
+
+            _filterUpdateTimer = new Timer(FilterUpdateTimerCallback, null, 5000, 5000);
         }
 
         #endregion
@@ -174,7 +183,19 @@ namespace FileMatcherApp.Views
             UpdateSorting();
         }
 
-        private void LvRedundant_OnDataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
+        private void IdenticalFilesOnCollectionChanged(object sender, NotifyCollectionChangedEventArgs args)
+        {
+            if (args.Action == NotifyCollectionChangedAction.Add)
+            {
+                var item = (FileInfoEx)args.NewItems[0];
+                if (_filter.Emerged(item))
+                {
+                    FilterOnChanged();
+                }
+            }
+        }
+
+        private void LvRedundantOnDataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
             AddGrouping();
         }
@@ -379,7 +400,19 @@ namespace FileMatcherApp.Views
 
         private void FilterOnChanged()
         {
-            LvRedundant.Items.Filter = _filter.Predicate;
+            _filterUpdateRequested = true;
+        }
+
+        private void FilterUpdateTimerCallback(object state)
+        {
+            if (_filterUpdateRequested)
+            {
+                Dispatcher.Invoke(() =>
+                {
+                    LvRedundant.Items.Filter = _filter.Predicate;
+                    _filterUpdateRequested = true;
+                });
+            }
         }
 
         private void OnCanExecuteOpenFolder(object sender, CanExecuteRoutedEventArgs e)

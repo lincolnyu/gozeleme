@@ -2,11 +2,13 @@
 {
     public class DuplicatesFilter
     {
+        public delegate void FilterChangedEventHandler();
+
         private bool _isEnabled;
 
         private double _totalDuplicateMbs;
 
-        public delegate void FilterChangedEventHandler();
+        private bool _raisingEvent;
 
         public bool IsEnabled
         {
@@ -48,18 +50,41 @@
             {
                 return true;
             }
+
             var fileInfo = (FileInfoEx)o;
-            var size = fileInfo.Length;
+
+            if (fileInfo.Duplicates >= 2)
+            {
+                var size = fileInfo.Length * (fileInfo.Duplicates - 1);
+                var totalDuplicateBytes = TotalDuplicateMbs * 1024 * 1024;
+                var selected = size > totalDuplicateBytes;
+                return selected;
+            }
+            return false;
+        }
+
+        public bool Emerged(FileInfoEx fi)
+        {
+            var dup = fi.Duplicates;
+            var newSize = dup * fi.Length;
+            var oldSize = (dup - 1) * fi.Length;
             var totalDuplicateBytes = TotalDuplicateMbs * 1024 * 1024;
-            return size > totalDuplicateBytes;
+            return newSize > totalDuplicateBytes && 
+                (oldSize < totalDuplicateBytes || dup<3);
         }
 
         private void RaiseFilterChangedEvent()
         {
+            if (_raisingEvent)
+            {
+                return;
+            }
+            _raisingEvent = true;
             if (FilterChanged !=null)
             {
                 FilterChanged();
             }
+            _raisingEvent = false;
         }
     }
 }
