@@ -153,16 +153,16 @@ namespace FileMatcherApp {
         /// <summary>
         ///   Looks up a localized string similar to Show files with at least.
         /// </summary>
-        public static string FilterCriterion {
+        internal static string FilterCriterion {
             get {
                 return ResourceManager.GetString("FilterCriterion", resourceCulture);
             }
         }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to duplicate MBs.
         /// </summary>
-        public static string FilterCriterionTail {
+        internal static string FilterCriterionTail {
             get {
                 return ResourceManager.GetString("FilterCriterionTail", resourceCulture);
             }
@@ -196,7 +196,7 @@ namespace FileMatcherApp {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to https://gozleme.codeplex.com/documentation.
+        ///   Looks up a localized string similar to https://gozleme.codeplex.com/wikipage?title=How%20to%20use.
         /// </summary>
         internal static string OnlineHelpUrl {
             get {

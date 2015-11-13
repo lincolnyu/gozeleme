@@ -150,7 +150,7 @@
     <comment>The file name field</comment>
   </data>
   <data name="OnlineHelpUrl" xml:space="preserve">
-    <value>https://gozleme.codeplex.com/documentation</value>
+    <value>https://gozleme.codeplex.com/wikipage?title=How%20to%20use</value>
   </data>
   <data name="ProceedToApplyDeletion" xml:space="preserve">
     <value>Are you sure you want to apply the operations? Deletions are not reversible.</value>
