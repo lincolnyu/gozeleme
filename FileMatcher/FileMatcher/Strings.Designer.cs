@@ -22,7 +22,7 @@ namespace FileMatcherApp {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "4.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    internal class Strings {
+    public class Strings {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
@@ -36,7 +36,7 @@ namespace FileMatcherApp {
         ///   Returns the cached ResourceManager instance used by this class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Resources.ResourceManager ResourceManager {
+        public static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
                     global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("FileMatcherApp.Strings", typeof(Strings).Assembly);
@@ -51,7 +51,7 @@ namespace FileMatcherApp {
         ///   resource lookups using this strongly typed resource class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Globalization.CultureInfo Culture {
+        public static global::System.Globalization.CultureInfo Culture {
             get {
                 return resourceCulture;
             }
@@ -63,7 +63,7 @@ namespace FileMatcherApp {
         /// <summary>
         ///   Looks up a localized string similar to Attention.
         /// </summary>
-        internal static string Alert {
+        public static string Alert {
             get {
                 return ResourceManager.GetString("Alert", resourceCulture);
             }
@@ -72,7 +72,7 @@ namespace FileMatcherApp {
         /// <summary>
         ///   Looks up a localized string similar to Warning: all files in file group(s) .
         /// </summary>
-        internal static string AllFilesInGroups {
+        public static string AllFilesInGroups {
             get {
                 return ResourceManager.GetString("AllFilesInGroups", resourceCulture);
             }
@@ -81,7 +81,7 @@ namespace FileMatcherApp {
         /// <summary>
         ///   Looks up a localized string similar to {0} File(s) have been deleted and {1} shortcut(s) have been created. Totally {2} byte(s) have been saved..
         /// </summary>
-        internal static string ApplicationSummary {
+        public static string ApplicationSummary {
             get {
                 return ResourceManager.GetString("ApplicationSummary", resourceCulture);
             }
@@ -90,7 +90,7 @@ namespace FileMatcherApp {
         /// <summary>
         ///   Looks up a localized string similar to Duplicate Files Locator.
         /// </summary>
-        internal static string AppName {
+        public static string AppName {
             get {
                 return ResourceManager.GetString("AppName", resourceCulture);
             }
@@ -99,7 +99,7 @@ namespace FileMatcherApp {
         /// <summary>
         ///   Looks up a localized string similar to Cancelling....
         /// </summary>
-        internal static string Cancelling {
+        public static string Cancelling {
             get {
                 return ResourceManager.GetString("Cancelling", resourceCulture);
             }
@@ -108,7 +108,7 @@ namespace FileMatcherApp {
         /// <summary>
         ///   Looks up a localized string similar to Currently scanning {0}....
         /// </summary>
-        internal static string CurrentDirectoryUpdate {
+        public static string CurrentDirectoryUpdate {
             get {
                 return ResourceManager.GetString("CurrentDirectoryUpdate", resourceCulture);
             }
@@ -117,7 +117,7 @@ namespace FileMatcherApp {
         /// <summary>
         ///   Looks up a localized string similar to Directory Name.
         /// </summary>
-        internal static string DirectoryName {
+        public static string DirectoryName {
             get {
                 return ResourceManager.GetString("DirectoryName", resourceCulture);
             }
@@ -126,7 +126,7 @@ namespace FileMatcherApp {
         /// <summary>
         ///   Looks up a localized string similar to Unexpected file length inequality.
         /// </summary>
-        internal static string FileLengthDiscrepancyError {
+        public static string FileLengthDiscrepancyError {
             get {
                 return ResourceManager.GetString("FileLengthDiscrepancyError", resourceCulture);
             }
@@ -135,7 +135,7 @@ namespace FileMatcherApp {
         /// <summary>
         ///   Looks up a localized string similar to If you cacnel the searching process, incomplete result will be displayed. Are you sure?.
         /// </summary>
-        internal static string FileMatchingToCancel {
+        public static string FileMatchingToCancel {
             get {
                 return ResourceManager.GetString("FileMatchingToCancel", resourceCulture);
             }
@@ -144,7 +144,7 @@ namespace FileMatcherApp {
         /// <summary>
         ///   Looks up a localized string similar to Finish or cancel the search before applying filter.
         /// </summary>
-        internal static string FilterConditions {
+        public static string FilterConditions {
             get {
                 return ResourceManager.GetString("FilterConditions", resourceCulture);
             }
@@ -153,7 +153,7 @@ namespace FileMatcherApp {
         /// <summary>
         ///   Looks up a localized string similar to Show files with at least.
         /// </summary>
-        internal static string FilterCriterion {
+        public static string FilterCriterion {
             get {
                 return ResourceManager.GetString("FilterCriterion", resourceCulture);
             }
@@ -162,7 +162,7 @@ namespace FileMatcherApp {
         /// <summary>
         ///   Looks up a localized string similar to duplicate MBs.
         /// </summary>
-        internal static string FilterCriterionTail {
+        public static string FilterCriterionTail {
             get {
                 return ResourceManager.GetString("FilterCriterionTail", resourceCulture);
             }
@@ -171,7 +171,7 @@ namespace FileMatcherApp {
         /// <summary>
         ///   Looks up a localized string similar to Group Id.
         /// </summary>
-        internal static string GroupId {
+        public static string GroupId {
             get {
                 return ResourceManager.GetString("GroupId", resourceCulture);
             }
@@ -180,7 +180,7 @@ namespace FileMatcherApp {
         /// <summary>
         ///   Looks up a localized string similar to Length.
         /// </summary>
-        internal static string Length {
+        public static string Length {
             get {
                 return ResourceManager.GetString("Length", resourceCulture);
             }
@@ -189,7 +189,7 @@ namespace FileMatcherApp {
         /// <summary>
         ///   Looks up a localized string similar to Name.
         /// </summary>
-        internal static string Name {
+        public static string Name {
             get {
                 return ResourceManager.GetString("Name", resourceCulture);
             }
@@ -198,7 +198,7 @@ namespace FileMatcherApp {
         /// <summary>
         ///   Looks up a localized string similar to https://gozleme.codeplex.com/wikipage?title=How%20to%20use.
         /// </summary>
-        internal static string OnlineHelpUrl {
+        public static string OnlineHelpUrl {
             get {
                 return ResourceManager.GetString("OnlineHelpUrl", resourceCulture);
             }
@@ -207,7 +207,7 @@ namespace FileMatcherApp {
         /// <summary>
         ///   Looks up a localized string similar to Pause Search.
         /// </summary>
-        internal static string PauseSearch {
+        public static string PauseSearch {
             get {
                 return ResourceManager.GetString("PauseSearch", resourceCulture);
             }
@@ -216,7 +216,7 @@ namespace FileMatcherApp {
         /// <summary>
         ///   Looks up a localized string similar to Are you sure you want to apply the operations? Deletions are not reversible..
         /// </summary>
-        internal static string ProceedToApplyDeletion {
+        public static string ProceedToApplyDeletion {
             get {
                 return ResourceManager.GetString("ProceedToApplyDeletion", resourceCulture);
             }
@@ -225,7 +225,7 @@ namespace FileMatcherApp {
         /// <summary>
         ///   Looks up a localized string similar to Are you sure you want to apply the operations? Files too large for recycle bin may be permanently deleted..
         /// </summary>
-        internal static string ProceedToApplyRecycling {
+        public static string ProceedToApplyRecycling {
             get {
                 return ResourceManager.GetString("ProceedToApplyRecycling", resourceCulture);
             }
@@ -234,7 +234,7 @@ namespace FileMatcherApp {
         /// <summary>
         ///   Looks up a localized string similar to are going to be deleted. Do you want to proceed?.
         /// </summary>
-        internal static string ProceedWithDeletion {
+        public static string ProceedWithDeletion {
             get {
                 return ResourceManager.GetString("ProceedWithDeletion", resourceCulture);
             }
@@ -243,7 +243,7 @@ namespace FileMatcherApp {
         /// <summary>
         ///   Looks up a localized string similar to Some folders have been ignored as they are subfolders of others..
         /// </summary>
-        internal static string RedudantSearchFolders {
+        public static string RedudantSearchFolders {
             get {
                 return ResourceManager.GetString("RedudantSearchFolders", resourceCulture);
             }
@@ -252,7 +252,7 @@ namespace FileMatcherApp {
         /// <summary>
         ///   Looks up a localized string similar to Please input a valid folder path..
         /// </summary>
-        internal static string RequestValidFolder {
+        public static string RequestValidFolder {
             get {
                 return ResourceManager.GetString("RequestValidFolder", resourceCulture);
             }
@@ -261,7 +261,7 @@ namespace FileMatcherApp {
         /// <summary>
         ///   Looks up a localized string similar to Resume Search.
         /// </summary>
-        internal static string ResumeSearch {
+        public static string ResumeSearch {
             get {
                 return ResourceManager.GetString("ResumeSearch", resourceCulture);
             }
@@ -270,7 +270,7 @@ namespace FileMatcherApp {
         /// <summary>
         ///   Looks up a localized string similar to {0} files with totally {1} duplicates in {2:0,000} bytes; {3} files processed out of {4}..
         /// </summary>
-        internal static string SearchProgressUpdateFormat {
+        public static string SearchProgressUpdateFormat {
             get {
                 return ResourceManager.GetString("SearchProgressUpdateFormat", resourceCulture);
             }
@@ -279,7 +279,7 @@ namespace FileMatcherApp {
         /// <summary>
         ///   Looks up a localized string similar to Search canceled by user before completion, incomplete result displayed..
         /// </summary>
-        internal static string StatusCanceled {
+        public static string StatusCanceled {
             get {
                 return ResourceManager.GetString("StatusCanceled", resourceCulture);
             }
@@ -288,7 +288,7 @@ namespace FileMatcherApp {
         /// <summary>
         ///   Looks up a localized string similar to Cleaning up....
         /// </summary>
-        internal static string StatusCleanup {
+        public static string StatusCleanup {
             get {
                 return ResourceManager.GetString("StatusCleanup", resourceCulture);
             }
@@ -297,7 +297,7 @@ namespace FileMatcherApp {
         /// <summary>
         ///   Looks up a localized string similar to Search complete..
         /// </summary>
-        internal static string StatusDone {
+        public static string StatusDone {
             get {
                 return ResourceManager.GetString("StatusDone", resourceCulture);
             }
@@ -306,7 +306,7 @@ namespace FileMatcherApp {
         /// <summary>
         ///   Looks up a localized string similar to Paused....
         /// </summary>
-        internal static string StatusPaused {
+        public static string StatusPaused {
             get {
                 return ResourceManager.GetString("StatusPaused", resourceCulture);
             }
@@ -315,7 +315,7 @@ namespace FileMatcherApp {
         /// <summary>
         ///   Looks up a localized string similar to Searching....
         /// </summary>
-        internal static string StatusSearching {
+        public static string StatusSearching {
             get {
                 return ResourceManager.GetString("StatusSearching", resourceCulture);
             }
@@ -324,7 +324,7 @@ namespace FileMatcherApp {
         /// <summary>
         ///   Looks up a localized string similar to ).
         /// </summary>
-        internal static string VersionClosingBracket {
+        public static string VersionClosingBracket {
             get {
                 return ResourceManager.GetString("VersionClosingBracket", resourceCulture);
             }
@@ -333,7 +333,7 @@ namespace FileMatcherApp {
         /// <summary>
         ///   Looks up a localized string similar to  (Version .
         /// </summary>
-        internal static string VersionOpeningBracket {
+        public static string VersionOpeningBracket {
             get {
                 return ResourceManager.GetString("VersionOpeningBracket", resourceCulture);
             }
@@ -342,7 +342,7 @@ namespace FileMatcherApp {
         /// <summary>
         ///   Looks up a localized string similar to Warning.
         /// </summary>
-        internal static string Warning {
+        public static string Warning {
             get {
                 return ResourceManager.GetString("Warning", resourceCulture);
             }
