@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
+using System.Linq;
 using System.Threading;
 
 namespace FileMatcher
@@ -63,69 +64,38 @@ namespace FileMatcher
         }
 
         public FileMatcher(params string[] startingPaths)
-            : this((IEnumerable<string>)startingPaths)
+            : this(FileHash.Instance, (IEnumerable<string>)startingPaths)
         {
         }
 
-        /// <summary>
-        ///  instantiates a FileMatcher with the specified starting directories in variable argument list
-        /// </summary>
-        /// <param name="fileHash">The file hash function to use</param>
-        /// <param name="startingDirs">The starting directories</param>
-        public FileMatcher(IFileHash fileHash, params DirectoryInfo[] startingDirs)
-            : this(fileHash, (IEnumerable<DirectoryInfo>)startingDirs)
+        public FileMatcher(IEnumerable<string> startingDirs, IEnumerable<string> excludedDirs = null)
+            : this(FileHash.Instance, startingDirs.Select(sd => new DirectoryInfo(sd)),
+                 excludedDirs != null? excludedDirs.Select(ed => new DirectoryInfo(ed)): null)
         {
         }
 
-        public FileMatcher(params DirectoryInfo[] startingDirs)
-        : this((IEnumerable<DirectoryInfo>)startingDirs)
+        public FileMatcher(IFileHash fileHash, IEnumerable<string> startingDirs, IEnumerable<string> excludedDirs = null)
+            : this(fileHash, startingDirs.Select(sd => new DirectoryInfo(sd)),
+                 excludedDirs != null? excludedDirs.Select(ed=>new DirectoryInfo(ed)) : null)
         {
         }
 
-
-        /// <summary>
-        ///  instantiates a FileMatcher with the specified path strings to the starting directories
-        /// </summary>
-        /// <param name="fileHash">The file hash function to use</param>
-        /// <param name="startingPaths">The path strings to the starting directories</param>
-        public FileMatcher(IFileHash fileHash, IEnumerable<string> startingPaths)
+        public FileMatcher(IEnumerable<DirectoryInfo> startingDirs, IEnumerable<DirectoryInfo> excludedDirs = null)
+            : this(FileHash.Instance, startingDirs, excludedDirs)
         {
-            StartingDirectories = StartDirectoryValidator.Validate(startingPaths);
+        }
+
+        public FileMatcher(IFileHash fileHash, IEnumerable<DirectoryInfo> startingDirs, IEnumerable<DirectoryInfo> excludedDirs = null)
+        {
+            List<DirectoryInfo> validatedStartingDirs;
+            ISet<DirectoryInfo> validatedExcludedDirs;
+            StartDirectoryValidator.Validate(startingDirs, excludedDirs, out validatedStartingDirs, out validatedExcludedDirs);
+            StartingDirectories = validatedStartingDirs;
+            ExcludedDirectories = validatedExcludedDirs;
+
             _lastUpdate = DateTime.Now;
 
             FileDictionary = new FileDictionary(fileHash);
-            Adaptor = new DynamicFileGroupAdaptor(FileDictionary);
-        }
-
-        public FileMatcher(IEnumerable<string> startingPaths)
-        {
-            StartingDirectories = StartDirectoryValidator.Validate(startingPaths);
-            _lastUpdate = DateTime.Now;
-            
-            FileDictionary = new FileDictionary(FileHash.Instance);
-            Adaptor = new DynamicFileGroupAdaptor(FileDictionary);
-        }
-
-        /// <summary>
-        ///  instantiates a FileMatcher with the specified starting directories
-        /// </summary>
-        /// <param name="fileHash">The file hash function to use</param>
-        /// <param name="startingDirs">The starting directories</param>
-        public FileMatcher(IFileHash fileHash, IEnumerable<DirectoryInfo> startingDirs)
-        {
-            StartingDirectories = StartDirectoryValidator.Validate(startingDirs);
-            _lastUpdate = DateTime.Now;
-
-            FileDictionary = new FileDictionary(fileHash);
-            Adaptor = new DynamicFileGroupAdaptor(FileDictionary);
-        }
-
-        public FileMatcher(IEnumerable<DirectoryInfo> startingDirs)
-        {
-            StartingDirectories = StartDirectoryValidator.Validate(startingDirs);
-            _lastUpdate = DateTime.Now;
-
-            FileDictionary = new FileDictionary(FileHash.Instance);
             Adaptor = new DynamicFileGroupAdaptor(FileDictionary);
         }
 
@@ -137,6 +107,8 @@ namespace FileMatcher
         ///  The starting directories to work from (redundancy already removed)
         /// </summary>
         public List<DirectoryInfo> StartingDirectories { get; private set; }
+
+        public ISet<DirectoryInfo> ExcludedDirectories { get; private set; }
 
         public ObservableCollection<IdenticalFiles> IdenticalFilesList
         {
@@ -296,7 +268,7 @@ namespace FileMatcher
                     break;
                 }
 
-                var fs = new FileScanner(sd);
+                var fs = new FileScanner(sd, ExcludedDirectories);
                 fs.PropertyChanged += (sender, args) =>
                 {
                     if (args.PropertyName == "CurrentDirectory")

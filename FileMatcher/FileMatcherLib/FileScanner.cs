@@ -24,6 +24,8 @@ namespace FileMatcher
         /// </summary>
         private readonly DirectoryInfo _startingDir;
 
+        private readonly ISet<string> _excludedDirs;
+
         private DirectoryInfo _currentDirectory;
 
         #endregion
@@ -44,10 +46,23 @@ namespace FileMatcher
         ///  Instantiates a scanner with the specified directoryand status updator
         /// </summary>
         /// <param name="startingDir">The starting directory</param>
+        /// <param name="excludedDirs">The directories to be excluded from searching</param>
         /// <param name="updateStatus">Delegate that updates the status to the progress displaying UI</param>
-        public FileScanner(DirectoryInfo startingDir)
+        public FileScanner(DirectoryInfo startingDir, ISet<DirectoryInfo> excludedDirs = null)
         {
             _startingDir = startingDir;
+            if (excludedDirs != null)
+            {
+                _excludedDirs = new HashSet<string>();
+                foreach (var ed in excludedDirs)
+                {
+                    _excludedDirs.Add(ed.FullName.ToLower());
+                }
+            }
+            else
+            {
+                _excludedDirs = null;
+            }
         }
 
         #endregion
@@ -99,6 +114,10 @@ namespace FileMatcher
                 var subds = TryGetDirectories(d);
                 foreach (var subd in subds)
                 {
+                    if (_excludedDirs != null && _excludedDirs.Contains(subd.FullName.ToLower()))
+                    {
+                        continue;
+                    }
                     qd.Enqueue(subd);
                 }
                 var fs = TryGetFiles(d);

@@ -33,11 +33,20 @@ namespace FileMatcherApp.Views
 
         private void BtnRemoveFolderClick(object sender, RoutedEventArgs e)
         {
-            if (LstFolders.SelectedIndex < 0)
+            var selectedIncluded = new object[LstFolders.SelectedItems.Count];
+            LstFolders.SelectedItems.CopyTo(selectedIncluded, 0);
+            foreach (var si in selectedIncluded)
             {
-                return;
+                LstFolders.Items.Remove(si);
             }
-            LstFolders.Items.RemoveAt(LstFolders.SelectedIndex);
+
+            var selectedExcluded = new object[LstExclFolders.SelectedItems.Count];
+            LstExclFolders.SelectedItems.CopyTo(selectedExcluded, 0);
+            foreach (var se in selectedExcluded)
+            {
+                LstExclFolders.Items.Remove(se);
+            }
+
             UpdateBtnRedudantEnabled();
         }
 
@@ -52,11 +61,24 @@ namespace FileMatcherApp.Views
             AddFolder(folder);
         }
 
-        private void BtnRedundantClick(object sender, RoutedEventArgs e)
+        private void BtnAddExclFolderClick(object sender, RoutedEventArgs e)
+        {
+            var folder = TxtFileToAdd.Text;
+            if (!Directory.Exists(folder))
+            {
+                MessageBox.Show(Strings.RequestValidFolder, Strings.AppName);
+                return;
+            }
+            AddExclFolder(folder);
+        }
+        
+
+        private void BtnStartSearchingClick(object sender, RoutedEventArgs e)
         {
             var folders = (from ListBoxItem item in LstFolders.Items select (string) item.Content).ToList();
+            var excludedFolders = (from ListBoxItem item in LstExclFolders.Items select (string)item.Content).ToList();
 
-            var fm =  new FileMatcher.FileMatcher(folders);
+            var fm =  new FileMatcher.FileMatcher(folders, excludedFolders);
 
             if (fm.StartingDirectories.Count < folders.Count)
             {
@@ -109,6 +131,23 @@ namespace FileMatcherApp.Views
             e.Handled = true;
         }
 
+        private void LstExclFoldersOnPreviewDrop(object sender, DragEventArgs args)
+        {
+
+        }
+
+        private void LstExclFoldersOnSelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            UpdateBtnRemoveFolderEnabledState();
+        }
+
+        private void UpdateBtnRemoveFolderEnabledState()
+        {
+            BtnRemoveFolder.IsEnabled
+                = LstFolders.SelectedItems.Count > 0 ||
+                LstExclFolders.SelectedItems.Count > 0;
+        }
+
         private void TxtFileToAdd_OnPreviewDrop(object sender, DragEventArgs e)
         {
         }
@@ -116,14 +155,15 @@ namespace FileMatcherApp.Views
         private void TxtFileToAdd_OnTextChanged(object sender, TextChangedEventArgs e)
         {
             BtnAddFolder.IsEnabled = TxtFileToAdd.Text.Trim() != "";
+            BtnAddFolderToExclude.IsEnabled = TxtFileToAdd.Text.Trim() != "";
         }
 
         private void LstFolders_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            BtnRemoveFolder.IsEnabled = LstFolders.SelectedItems.Count > 0;
+            UpdateBtnRemoveFolderEnabledState();
         }
 
-        private void MainWindow_OnPreviewDrop(object sender, DragEventArgs e)
+        private void MainWindowOnPreviewDrop(object sender, DragEventArgs e)
         {
         }
 
@@ -136,10 +176,25 @@ namespace FileMatcherApp.Views
 
         private void AddFolder(string folder)
         {
-            if (LstFolders.Items.Contains(folder)) return;
+            if (LstFolders.Items.Cast<ListBoxItem>().Select(x=>x.Content)
+                .Contains(folder))
+            {
+                return;
+            }
             var newItem = new ListBoxItem {Content = folder, ToolTip = folder};
             LstFolders.Items.Add(newItem);
             UpdateBtnRedudantEnabled();
+        }
+
+        private void AddExclFolder(string folder)
+        {
+            if (LstExclFolders.Items.Cast<ListBoxItem>().Select(x=>x.Content).
+                Contains(folder))
+            {
+                return;
+            }
+            var newItem = new ListBoxItem { Content = folder, ToolTip = folder };
+            LstExclFolders.Items.Add(newItem);
         }
 
         private void UpdateBtnRedudantEnabled()
