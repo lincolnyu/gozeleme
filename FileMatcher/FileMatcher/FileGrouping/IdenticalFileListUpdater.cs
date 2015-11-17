@@ -4,11 +4,15 @@ using System.Collections.Specialized;
 using System.Linq;
 using System.IO;
 using System.Windows.Threading;
+using FileMatcherApp.Models;
 
 namespace FileMatcherApp.FileGrouping
 {
     public class IdenticalFileListUpdater
     {
+        // TODO thread synchronisation...
+        // TODO removal of event handlers
+
         private int _lastGroupId;
         private readonly Dictionary<IdenticalFiles, int> _groupIdMap = new Dictionary<IdenticalFiles, int>();
 
@@ -30,17 +34,42 @@ namespace FileMatcherApp.FileGrouping
         private void BindSource()
         {
             Adaptor.IdenticalFileGroups.CollectionChanged += FileGroupsOnCollectionChanged;
+            IdenticalFileList.CollectionChanged += IdenticalFileListOnCollectionChanged;
         }
 
+        private void IdenticalFileListOnCollectionChanged(object sender, NotifyCollectionChangedEventArgs args)
+        {
+            // TODO if this is not sufficient, use sync lock
+            // only deals with removal initiated from the UI
+            if (args.Action == NotifyCollectionChangedAction.Remove)
+            {
+                foreach (var oldItem in args.OldItems.Cast<FileInfoEx>())
+                {
+                    Adaptor.RemoveItemFromGroup(oldItem.InternalFileInfo);
+                }
+            }
+        }
+
+        /// <summary>
+        ///  responds to file group change at the back end
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="args"></param>
         private void FileGroupsOnCollectionChanged(object sender, NotifyCollectionChangedEventArgs args)
         {
-            // NOTE we don't deal with OldItems as the back end only adds files and 
-            //      the deletions/changes initiated from the front end don't affect the 
-            if (args.NewItems != null)
+            // TODO if this is not sufficient, use sync lock
+            if (args.Action == NotifyCollectionChangedAction.Add && args.NewItems != null)
             {
                 foreach (var newItem in args.NewItems.Cast<IdenticalFiles>())
                 {
                     LoadFiles(newItem);
+                }
+            }
+            else if (args.Action == NotifyCollectionChangedAction.Remove && args.OldItems != null)
+            {
+                foreach (var oldItem in args.OldItems.Cast<IdenticalFiles>())
+                {
+                    UnloadFiles(oldItem);
                 }
             }
         }

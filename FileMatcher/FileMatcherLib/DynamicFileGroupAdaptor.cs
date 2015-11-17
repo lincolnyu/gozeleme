@@ -1,6 +1,8 @@
 ﻿using System.Collections.ObjectModel;
 using FileMatcher.Collections;
 using System;
+using System.Globalization;
+using System.IO;
 
 namespace FileMatcher
 {
@@ -34,6 +36,38 @@ namespace FileMatcher
 
         public ObservableCollection<IdenticalFiles> IdenticalFileGroups { get; private set; } = new ObservableCollection<IdenticalFiles>();
 
+        public int FindGroup(FileInfo fi)
+        {
+            var ig = new IdenticalFiles();
+            ig.AddFirst(fi);
+            return FindGroup(ig);
+        }
+
+        public int FindGroup(IdenticalFiles ig)
+        {
+            int outlistIndex;
+            var comparer = new Comparer(ig);
+            var found = IdenticalFileGroups.Search(0, IdenticalFileGroups.Count,
+                   comparer, out outlistIndex);
+            return found ? outlistIndex : -outlistIndex - 1;
+        }
+
+        public bool RemoveItemFromGroup(FileInfo f)
+        {
+            var groupIndex = FindGroup(f);
+            if (groupIndex < 0)
+            {
+                return false;
+            }
+            var ig = IdenticalFileGroups[groupIndex];
+            ig.Remove(f);
+            if (ig.Count <= 1)
+            {
+                IdenticalFileGroups.RemoveAt(groupIndex);
+            }
+            return true;
+        }
+
         private void FileDictionaryOnAdded(object sender, FileDictionary.DictionaryAddedEventArgs args)
         {
             var key = args.Hash;
@@ -44,7 +78,7 @@ namespace FileMatcher
             {
                 int outlistIndex;
                 var comparer = new Comparer(ig);
-                var found = BinarySearch.Search(IdenticalFileGroups, 0, IdenticalFileGroups.Count,
+                var found = IdenticalFileGroups.Search(0, IdenticalFileGroups.Count,
                    comparer, out outlistIndex);
                 if (!found)
                 {

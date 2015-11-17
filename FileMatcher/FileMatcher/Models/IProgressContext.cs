@@ -1,4 +1,4 @@
-﻿namespace FileMatcherApp
+﻿namespace FileMatcherApp.Models
 {
     public interface IProgressContext
     {

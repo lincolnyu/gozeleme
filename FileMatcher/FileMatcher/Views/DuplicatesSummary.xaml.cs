@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
@@ -9,11 +10,9 @@ using System.Windows.Data;
 using System.Windows.Input;
 using FileMatcherApp.Controllers;
 using FileMatcherApp.Extensions;
-using FileMatcher;
 using FileMatcherApp.Models;
 using FileMatcherApp.FileGrouping;
 using FileMatcherApp.Filters;
-using System;
 using System.Collections.Specialized;
 using System.Threading;
 
@@ -36,7 +35,7 @@ namespace FileMatcherApp.Views
         private bool _isSearching;
         private string _pauseButtonTitle;
 
-        private DuplicatesFilter _filter;
+        private readonly DuplicatesFilter _filter;
 
         private Timer _filterUpdateTimer;
         private bool _filterUpdateRequested;
@@ -130,8 +129,6 @@ namespace FileMatcherApp.Views
 
         public bool DeleteToRecycleBin { get; private set; }
 
-        public DynamicFileGroupAdaptor Adaptor { get; private set; }
-
         public IdenticalFileListUpdater Updater { get; private set; }
 
         public double ProgressPercentage
@@ -142,7 +139,7 @@ namespace FileMatcherApp.Views
             }
             set
             {
-                if (_progressPercentage != value)
+                if (Math.Abs(_progressPercentage - value) > double.Epsilon)
                 {
                     _progressPercentage = value;
                     RaisePropertyChangedEvent("ProgressPercentage");
@@ -333,7 +330,7 @@ namespace FileMatcherApp.Views
             UpdateUndoRedoable();
         }
 
-        private void MiApply_OnClick(object sender, RoutedEventArgs e)
+        private void MiApplyOnClick(object sender, RoutedEventArgs e)
         {
             var res = MessageBox.Show(DeleteToRecycleBin
                 ? Strings.ProceedToApplyRecycling
@@ -343,6 +340,7 @@ namespace FileMatcherApp.Views
             var indicesToRemove = new List<int>();
             var totalSizeRemoved = 0L;
             var shortcutCount = 0;
+            var filesToErase = new LinkedList<string>();
             for (var i = 0; i < IdenticalFiles.Count; i++)
             {
                 var f = IdenticalFiles[i];
@@ -356,16 +354,13 @@ namespace FileMatcherApp.Views
                     linkFile.Save(name, true);
                     shortcutCount++;
                 }
-                if (!f.IsSelectedToDelete) continue;
+                if (!f.IsSelectedToDelete)
+                {
+                    continue;
+                }
                 totalSizeRemoved += f.Length;
-                if (DeleteToRecycleBin)
-                {
-                    RecycleBin.SendSilent(f.FullName);
-                }
-                else
-                {
-                    File.Delete(f.FullName);
-                }
+
+                filesToErase.AddLast(f.FullName);
 
                 indicesToRemove.Add(i);
             }
@@ -374,6 +369,18 @@ namespace FileMatcherApp.Views
             {
                 var index = indicesToRemove[i];
                 IdenticalFiles.RemoveAt(index);
+            }
+
+            foreach (var f in filesToErase)
+            {
+                if (DeleteToRecycleBin)
+                {
+                    RecycleBin.SendSilent(f);
+                }
+                else
+                {
+                    File.Delete(f);
+                }
             }
 
             UserCommands.Clear();
@@ -854,6 +861,8 @@ namespace FileMatcherApp.Views
             {
                 FileMatcherWorkingObject.Canceller.Canceled = true;
             }
+
+            _filterUpdateTimer?.Dispose();
         }
 
         private bool IsCompleted()
@@ -861,6 +870,7 @@ namespace FileMatcherApp.Views
             return FileMatcherWorkingObject.Canceller.Canceled 
                 || FileMatcherWorkingObject.FileMatcher.Status == FileMatcher.FileMatcher.Statuses.Done;
         }
+
         #endregion
     }
 }

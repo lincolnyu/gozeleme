@@ -1,4 +1,7 @@
-﻿namespace FileMatcherApp.Filters
+﻿using System;
+using FileMatcherApp.Models;
+
+namespace FileMatcherApp.Filters
 {
     public class DuplicatesFilter
     {
@@ -34,7 +37,7 @@
             }
             set
             {
-                if (_totalDuplicateMbs != value)
+                if (Math.Abs(_totalDuplicateMbs - value) > double.Epsilon)
                 {
                     _totalDuplicateMbs = value;
                     RaiseFilterChangedEvent();

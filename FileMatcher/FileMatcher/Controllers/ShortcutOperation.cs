@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using System.Windows.Forms;
+using FileMatcherApp.Models;
 
 namespace FileMatcherApp.Controllers
 {

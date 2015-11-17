@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.IO;
 
-namespace FileMatcherApp
+namespace FileMatcherApp.Models
 {
     /// <summary>
     ///  A class that keeps all files that have duplicates
@@ -127,7 +127,22 @@ namespace FileMatcherApp
         public int Find(FileInfo fileInfo)
         {
             var target = new FileInfoEx(fileInfo);
-            return Find(target);
+            var i = Find(target);
+            // NOTE groupId is not available, so the search returns the
+            //      first item with the same length
+            if (i < 0)
+            {
+                i = -i - 1;
+            }
+            for (; i < Count; i++)
+            {
+                var item = this[i];
+                if (item.InternalFileInfo == fileInfo)
+                {
+                    return i;
+                }
+            }
+            return -1;// not found
         }
 
         public int FindGroupStart(FileInfoEx fileInfo)

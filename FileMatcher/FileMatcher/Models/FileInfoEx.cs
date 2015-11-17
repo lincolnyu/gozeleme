@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel;
 using System.IO;
 
-namespace FileMatcherApp
+namespace FileMatcherApp.Models
 {
     public class FileInfoEx : INotifyPropertyChanged
     {

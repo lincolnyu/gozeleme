@@ -1,4 +1,6 @@
-﻿namespace FileMatcherApp.Controllers
+﻿using FileMatcherApp.Models;
+
+namespace FileMatcherApp.Controllers
 {
     public class DeleteOrUndeleteOperation : IOperation
     {

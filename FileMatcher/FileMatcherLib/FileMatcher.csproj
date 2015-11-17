@@ -7,7 +7,7 @@
     <ProjectGuid>{4983EC14-AB0D-4702-9376-69540F618AD5}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>FileMatcherLib</RootNamespace>
+    <RootNamespace>FileMatcher</RootNamespace>
     <AssemblyName>FileMatcherLib</AssemblyName>
     <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
