@@ -561,7 +561,7 @@ namespace FileMatcherApp.Views
             LvRedundant.SelectionMode = (MiPickSurvivor.IsChecked) ? SelectionMode.Single : SelectionMode.Extended;
         }
 
-        private void MiClose_OnClick(object sender, RoutedEventArgs e)
+        private void MiCloseOnClick(object sender, RoutedEventArgs e)
         {
             Close();
         }

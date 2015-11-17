@@ -50,7 +50,7 @@ namespace FileMatcherApp.Views
             UpdateBtnRedudantEnabled();
         }
 
-        private void BtnAddFolderClick(object sender, RoutedEventArgs e)
+        private void BtnAddIncludedFolderOnClick(object sender, RoutedEventArgs e)
         {
             var folder = TxtFileToAdd.Text;
             if (!Directory.Exists(folder))
@@ -61,7 +61,7 @@ namespace FileMatcherApp.Views
             AddFolder(folder);
         }
 
-        private void BtnAddExclFolderClick(object sender, RoutedEventArgs e)
+        private void BtnAddExcludedFolderOnClick(object sender, RoutedEventArgs e)
         {
             var folder = TxtFileToAdd.Text;
             if (!Directory.Exists(folder))
@@ -72,7 +72,6 @@ namespace FileMatcherApp.Views
             AddExclFolder(folder);
         }
         
-
         private void BtnStartSearchingClick(object sender, RoutedEventArgs e)
         {
             var folders = (from ListBoxItem item in LstFolders.Items select (string) item.Content).ToList();
@@ -154,8 +153,8 @@ namespace FileMatcherApp.Views
 
         private void TxtFileToAdd_OnTextChanged(object sender, TextChangedEventArgs e)
         {
-            BtnAddFolder.IsEnabled = TxtFileToAdd.Text.Trim() != "";
-            BtnAddFolderToExclude.IsEnabled = TxtFileToAdd.Text.Trim() != "";
+            BtnAddIncludedFolder.IsEnabled = TxtFileToAdd.Text.Trim() != "";
+            BtnAddExcludedFolder.IsEnabled = TxtFileToAdd.Text.Trim() != "";
         }
 
         private void LstFolders_OnSelectionChanged(object sender, SelectionChangedEventArgs e)

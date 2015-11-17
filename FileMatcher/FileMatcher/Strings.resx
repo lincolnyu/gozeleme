@@ -127,7 +127,7 @@
     <value>{0} File(s) have been deleted and {1} shortcut(s) have been created. Totally {2} byte(s) have been saved.</value>
   </data>
   <data name="AppName" xml:space="preserve">
-    <value>Duplicate Files Locator</value>
+    <value>Duplicate Files Finder</value>
     <comment>A WPF application made by quanbenSoft for finding and cleaning redundant files</comment>
   </data>
   <data name="DirectoryName" xml:space="preserve">
@@ -217,5 +217,50 @@
   </data>
   <data name="FilterCriterionTail" xml:space="preserve">
     <value>duplicate MBs</value>
+  </data>
+  <data name="AddAsExcludedFolder" xml:space="preserve">
+    <value>Add as excluded folder</value>
+  </data>
+  <data name="AddAsIncludedFolder" xml:space="preserve">
+    <value>Add as included folder</value>
+  </data>
+  <data name="DeleteSelected" xml:space="preserve">
+    <value>Delete selected</value>
+  </data>
+  <data name="Help" xml:space="preserve">
+    <value>Help</value>
+  </data>
+  <data name="MiActions" xml:space="preserve">
+    <value>_Actions</value>
+  </data>
+  <data name="MiEdit" xml:space="preserve">
+    <value>_Edit</value>
+  </data>
+  <data name="MiFile" xml:space="preserve">
+    <value>_File</value>
+  </data>
+  <data name="MiHelp" xml:space="preserve">
+    <value>_Help</value>
+  </data>
+  <data name="MiSearch" xml:space="preserve">
+    <value>_Search</value>
+  </data>
+  <data name="MiView" xml:space="preserve">
+    <value>_View</value>
+  </data>
+  <data name="Path" xml:space="preserve">
+    <value>Path:</value>
+  </data>
+  <data name="RemoveSelectedFolders" xml:space="preserve">
+    <value>Remove selected folders</value>
+  </data>
+  <data name="StartSearching" xml:space="preserve">
+    <value>Start searching</value>
+  </data>
+  <data name="SumaryWindowTitle" xml:space="preserve">
+    <value>Duplicates Summary</value>
+  </data>
+  <data name="UndeleteSelected" xml:space="preserve">
+    <value>Undelete selected</value>
   </data>
 </root>

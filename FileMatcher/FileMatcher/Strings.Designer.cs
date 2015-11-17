@@ -61,6 +61,24 @@ namespace FileMatcherApp {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Add as excluded folder.
+        /// </summary>
+        public static string AddAsExcludedFolder {
+            get {
+                return ResourceManager.GetString("AddAsExcludedFolder", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Add as included folder.
+        /// </summary>
+        public static string AddAsIncludedFolder {
+            get {
+                return ResourceManager.GetString("AddAsIncludedFolder", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Attention.
         /// </summary>
         public static string Alert {
@@ -88,7 +106,7 @@ namespace FileMatcherApp {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Duplicate Files Locator.
+        ///   Looks up a localized string similar to Duplicate Files Finder.
         /// </summary>
         public static string AppName {
             get {
@@ -111,6 +129,15 @@ namespace FileMatcherApp {
         public static string CurrentDirectoryUpdate {
             get {
                 return ResourceManager.GetString("CurrentDirectoryUpdate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Delete selected.
+        /// </summary>
+        public static string DeleteSelected {
+            get {
+                return ResourceManager.GetString("DeleteSelected", resourceCulture);
             }
         }
         
@@ -178,11 +205,74 @@ namespace FileMatcherApp {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Help.
+        /// </summary>
+        public static string Help {
+            get {
+                return ResourceManager.GetString("Help", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Length.
         /// </summary>
         public static string Length {
             get {
                 return ResourceManager.GetString("Length", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to _Actions.
+        /// </summary>
+        public static string MiActions {
+            get {
+                return ResourceManager.GetString("MiActions", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to _Edit.
+        /// </summary>
+        public static string MiEdit {
+            get {
+                return ResourceManager.GetString("MiEdit", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to _File.
+        /// </summary>
+        public static string MiFile {
+            get {
+                return ResourceManager.GetString("MiFile", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to _Help.
+        /// </summary>
+        public static string MiHelp {
+            get {
+                return ResourceManager.GetString("MiHelp", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to _Search.
+        /// </summary>
+        public static string MiSearch {
+            get {
+                return ResourceManager.GetString("MiSearch", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to _View.
+        /// </summary>
+        public static string MiView {
+            get {
+                return ResourceManager.GetString("MiView", resourceCulture);
             }
         }
         
@@ -201,6 +291,15 @@ namespace FileMatcherApp {
         public static string OnlineHelpUrl {
             get {
                 return ResourceManager.GetString("OnlineHelpUrl", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Path:.
+        /// </summary>
+        public static string Path {
+            get {
+                return ResourceManager.GetString("Path", resourceCulture);
             }
         }
         
@@ -250,6 +349,15 @@ namespace FileMatcherApp {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Remove selected folders.
+        /// </summary>
+        public static string RemoveSelectedFolders {
+            get {
+                return ResourceManager.GetString("RemoveSelectedFolders", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Please input a valid folder path..
         /// </summary>
         public static string RequestValidFolder {
@@ -273,6 +381,15 @@ namespace FileMatcherApp {
         public static string SearchProgressUpdateFormat {
             get {
                 return ResourceManager.GetString("SearchProgressUpdateFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Start searching.
+        /// </summary>
+        public static string StartSearching {
+            get {
+                return ResourceManager.GetString("StartSearching", resourceCulture);
             }
         }
         
@@ -318,6 +435,24 @@ namespace FileMatcherApp {
         public static string StatusSearching {
             get {
                 return ResourceManager.GetString("StatusSearching", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Duplicates Summary.
+        /// </summary>
+        public static string SumaryWindowTitle {
+            get {
+                return ResourceManager.GetString("SumaryWindowTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Undelete selected.
+        /// </summary>
+        public static string UndeleteSelected {
+            get {
+                return ResourceManager.GetString("UndeleteSelected", resourceCulture);
             }
         }
         
