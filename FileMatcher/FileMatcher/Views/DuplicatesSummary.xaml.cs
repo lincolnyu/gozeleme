@@ -66,7 +66,7 @@ namespace FileMatcherApp.Views
             DeleteToRecycleBin = true;
 
             IsSearching = true;
-            PauseButtonTitle = Strings.PauseSearch;
+            PauseButtonTitle = Strings.MiPauseSearch;
 
             _filterUpdateTimer = new Timer(FilterUpdateTimerCallback, null, 5000, 5000);
         }
@@ -841,7 +841,7 @@ namespace FileMatcherApp.Views
         {
             var paused = !FileMatcherWorkingObject.Canceller.Paused;
             FileMatcherWorkingObject.Canceller.Paused = paused;
-            PauseButtonTitle = paused ? "Resume Search" : "Pause Search";
+            PauseButtonTitle = paused ? Strings.MiResumeSearch : Strings.MiPauseSearch;
             FileMatcherOnUpdateStatus(this);
         }
 

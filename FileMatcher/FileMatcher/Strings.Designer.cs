@@ -151,6 +151,15 @@ namespace FileMatcherApp {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Duplicate Files Found.
+        /// </summary>
+        public static string DuplicateFilesFound {
+            get {
+                return ResourceManager.GetString("DuplicateFilesFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Unexpected file length inequality.
         /// </summary>
         public static string FileLengthDiscrepancyError {
@@ -196,11 +205,56 @@ namespace FileMatcherApp {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Filter.
+        /// </summary>
+        public static string FilterWindowTitle {
+            get {
+                return ResourceManager.GetString("FilterWindowTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Group Id.
         /// </summary>
         public static string GroupId {
             get {
                 return ResourceManager.GetString("GroupId", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Directory.
+        /// </summary>
+        public static string HeaderDirectory {
+            get {
+                return ResourceManager.GetString("HeaderDirectory", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Name.
+        /// </summary>
+        public static string HeaderName {
+            get {
+                return ResourceManager.GetString("HeaderName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Size (bytes).
+        /// </summary>
+        public static string HeaderSize {
+            get {
+                return ResourceManager.GetString("HeaderSize", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to State.
+        /// </summary>
+        public static string HeaderState {
+            get {
+                return ResourceManager.GetString("HeaderState", resourceCulture);
             }
         }
         
@@ -232,6 +286,42 @@ namespace FileMatcherApp {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to _Apply.
+        /// </summary>
+        public static string MiApply {
+            get {
+                return ResourceManager.GetString("MiApply", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to _Close.
+        /// </summary>
+        public static string MiClose {
+            get {
+                return ResourceManager.GetString("MiClose", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to _Delete selected.
+        /// </summary>
+        public static string MiDeleteSelected {
+            get {
+                return ResourceManager.GetString("MiDeleteSelected", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Delete unselected.
+        /// </summary>
+        public static string MiDeleteUnselected {
+            get {
+                return ResourceManager.GetString("MiDeleteUnselected", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to _Edit.
         /// </summary>
         public static string MiEdit {
@@ -250,6 +340,15 @@ namespace FileMatcherApp {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to _Filter.
+        /// </summary>
+        public static string MiFilter {
+            get {
+                return ResourceManager.GetString("MiFilter", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to _Help.
         /// </summary>
         public static string MiHelp {
@@ -259,11 +358,92 @@ namespace FileMatcherApp {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to _Online Help.
+        /// </summary>
+        public static string MiOnlineHelp {
+            get {
+                return ResourceManager.GetString("MiOnlineHelp", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Open file location.
+        /// </summary>
+        public static string MiOpenFileLocation {
+            get {
+                return ResourceManager.GetString("MiOpenFileLocation", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to _Pause search.
+        /// </summary>
+        public static string MiPauseSearch {
+            get {
+                return ResourceManager.GetString("MiPauseSearch", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Pick _Representative.
+        /// </summary>
+        public static string MiPickRepresentative {
+            get {
+                return ResourceManager.GetString("MiPickRepresentative", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to _Redo.
+        /// </summary>
+        public static string MiRedo {
+            get {
+                return ResourceManager.GetString("MiRedo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to _Resume search.
+        /// </summary>
+        public static string MiResumeSearch {
+            get {
+                return ResourceManager.GetString("MiResumeSearch", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to _Search.
         /// </summary>
         public static string MiSearch {
             get {
                 return ResourceManager.GetString("MiSearch", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to _Stop.
+        /// </summary>
+        public static string MiStop {
+            get {
+                return ResourceManager.GetString("MiStop", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to _Undelete selected.
+        /// </summary>
+        public static string MiUndeleteSelected {
+            get {
+                return ResourceManager.GetString("MiUndeleteSelected", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to _Undo.
+        /// </summary>
+        public static string MiUndo {
+            get {
+                return ResourceManager.GetString("MiUndo", resourceCulture);
             }
         }
         
@@ -300,15 +480,6 @@ namespace FileMatcherApp {
         public static string Path {
             get {
                 return ResourceManager.GetString("Path", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Pause Search.
-        /// </summary>
-        public static string PauseSearch {
-            get {
-                return ResourceManager.GetString("PauseSearch", resourceCulture);
             }
         }
         
@@ -363,15 +534,6 @@ namespace FileMatcherApp {
         public static string RequestValidFolder {
             get {
                 return ResourceManager.GetString("RequestValidFolder", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Resume Search.
-        /// </summary>
-        public static string ResumeSearch {
-            get {
-                return ResourceManager.GetString("ResumeSearch", resourceCulture);
             }
         }
         

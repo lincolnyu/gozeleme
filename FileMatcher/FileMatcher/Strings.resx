@@ -200,11 +200,11 @@
   <data name="StatusPaused" xml:space="preserve">
     <value>Paused...</value>
   </data>
-  <data name="PauseSearch" xml:space="preserve">
-    <value>Pause Search</value>
+  <data name="MiPauseSearch" xml:space="preserve">
+    <value>_Pause search</value>
   </data>
-  <data name="ResumeSearch" xml:space="preserve">
-    <value>Resume Search</value>
+  <data name="MiResumeSearch" xml:space="preserve">
+    <value>_Resume search</value>
   </data>
   <data name="FilterConditions" xml:space="preserve">
     <value>Finish or cancel the search before applying filter</value>
@@ -262,5 +262,59 @@
   </data>
   <data name="UndeleteSelected" xml:space="preserve">
     <value>Undelete selected</value>
+  </data>
+  <data name="DuplicateFilesFound" xml:space="preserve">
+    <value>Duplicate Files Found</value>
+  </data>
+  <data name="FilterWindowTitle" xml:space="preserve">
+    <value>Filter</value>
+  </data>
+  <data name="HeaderDirectory" xml:space="preserve">
+    <value>Directory</value>
+  </data>
+  <data name="HeaderName" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="HeaderSize" xml:space="preserve">
+    <value>Size (bytes)</value>
+  </data>
+  <data name="HeaderState" xml:space="preserve">
+    <value>State</value>
+  </data>
+  <data name="MiApply" xml:space="preserve">
+    <value>_Apply</value>
+  </data>
+  <data name="MiClose" xml:space="preserve">
+    <value>_Close</value>
+  </data>
+  <data name="MiDeleteSelected" xml:space="preserve">
+    <value>_Delete selected</value>
+  </data>
+  <data name="MiDeleteUnselected" xml:space="preserve">
+    <value>Delete unselected</value>
+  </data>
+  <data name="MiFilter" xml:space="preserve">
+    <value>_Filter</value>
+  </data>
+  <data name="MiOnlineHelp" xml:space="preserve">
+    <value>_Online Help</value>
+  </data>
+  <data name="MiOpenFileLocation" xml:space="preserve">
+    <value>Open file location</value>
+  </data>
+  <data name="MiPickRepresentative" xml:space="preserve">
+    <value>Pick _Representative</value>
+  </data>
+  <data name="MiRedo" xml:space="preserve">
+    <value>_Redo</value>
+  </data>
+  <data name="MiStop" xml:space="preserve">
+    <value>_Stop</value>
+  </data>
+  <data name="MiUndeleteSelected" xml:space="preserve">
+    <value>_Undelete selected</value>
+  </data>
+  <data name="MiUndo" xml:space="preserve">
+    <value>_Undo</value>
   </data>
 </root>

@@ -21,38 +21,38 @@
               DockPanel.Dock="Top">
             <MenuItem Header="{x:Static local:Strings.MiFile}">
                 <MenuItem.Items>
-                    <MenuItem Header="_Close" Click="MiCloseOnClick"/>
+                    <MenuItem Header="{x:Static local:Strings.MiClose}" Click="MiCloseOnClick"/>
                 </MenuItem.Items>
             </MenuItem>
             <MenuItem Header="{x:Static local:Strings.MiView}">
                 <MenuItem.Items>
-                    <MenuItem Name="MiFilter" Header="_Filter" Click="MiFilter_OnClick"></MenuItem>
+                    <MenuItem Name="MiFilter" Header="{x:Static local:Strings.MiFilter}" Click="MiFilter_OnClick"></MenuItem>
                 </MenuItem.Items>
             </MenuItem>
             <MenuItem Header="{x:Static local:Strings.MiEdit}">
                 <MenuItem.Items>
-                    <MenuItem Name="MiUndo" Header="_Undo" Click="MiUndo_OnClick" IsEnabled="{Binding Path=Undoable}"/>
-                    <MenuItem Name="MiRedo" Header="_Redo" Click="MiRedo_OnClick" IsEnabled="{Binding Path=Redoable}"/>
-                    <MenuItem Name="MiApply" Header="_Apply" Click="MiApplyOnClick"></MenuItem>
+                    <MenuItem Name="MiUndo" Header="{x:Static local:Strings.MiUndo}" Click="MiUndo_OnClick" IsEnabled="{Binding Path=Undoable}"/>
+                    <MenuItem Name="MiRedo" Header="{x:Static local:Strings.MiRedo}" Click="MiRedo_OnClick" IsEnabled="{Binding Path=Redoable}"/>
+                    <MenuItem Name="MiApply" Header="{x:Static local:Strings.MiApply}" Click="MiApplyOnClick"></MenuItem>
                 </MenuItem.Items>
             </MenuItem>
             <MenuItem Header="{x:Static local:Strings.MiSearch}">
                 <MenuItem.Items>
                     <MenuItem Name="MiPause" Header="{Binding PauseButtonTitle}" Click="MiPauseOnClick" IsEnabled="{Binding IsSearching}"></MenuItem>
-                    <MenuItem Name="MiStop" Header="_Stop" Click="MiStopOnClick" IsEnabled="{Binding IsSearching}"></MenuItem>
+                    <MenuItem Name="MiStop" Header="{x:Static local:Strings.MiStop}" Click="MiStopOnClick" IsEnabled="{Binding IsSearching}"></MenuItem>
                 </MenuItem.Items>
             </MenuItem>
             <MenuItem Header="{x:Static local:Strings.MiActions}">
                 <MenuItem.Items>
-                    <MenuItem Name="MiDeleteSelected" Header="_Delete Selected" Command="commands:CommandLibrary.Delete"></MenuItem>
-                    <MenuItem Name="MiUndeleteSelected" Header="_Undelete Selected" Command="commands:CommandLibrary.Undelete"></MenuItem>
-                    <MenuItem Name="MiPickRepresentative" Header="Pick _Representative" IsCheckable="True" Click="MiPickRepresentative_OnClick"></MenuItem>
-                    <MenuItem Name="MiPickSurvivor" Header="Delete Unpicked" IsCheckable="True" Click="MiPickSurvivor_OnClick"></MenuItem>
+                    <MenuItem Name="MiDeleteSelected" Header="{x:Static local:Strings.MiDeleteSelected}" Command="commands:CommandLibrary.Delete"></MenuItem>
+                    <MenuItem Name="MiUndeleteSelected" Header="{x:Static local:Strings.MiUndeleteSelected}" Command="commands:CommandLibrary.Undelete"></MenuItem>
+                    <MenuItem Name="MiPickRepresentative" Header="{x:Static local:Strings.MiPickRepresentative}" IsCheckable="True" Click="MiPickRepresentative_OnClick"></MenuItem>
+                    <MenuItem Name="MiPickSurvivor" Header="{x:Static local:Strings.MiDeleteUnselected}" IsCheckable="True" Click="MiPickSurvivor_OnClick"></MenuItem>
                 </MenuItem.Items>
             </MenuItem>
             <MenuItem Header="{x:Static local:Strings.MiHelp}">
                 <MenuItem.Items>
-                    <MenuItem Name="MiOnlineHelp" Header="_Online Help" Click="MiOnlineHelp_OnClick"/>
+                    <MenuItem Name="MiOnlineHelp" Header="{x:Static local:Strings.MiOnlineHelp}" Click="MiOnlineHelp_OnClick"/>
                 </MenuItem.Items>
             </MenuItem>
         </Menu>
@@ -63,7 +63,7 @@
                 Command="commands:CommandLibrary.Undelete"/>
                 <Button Name="BtnDelSel" Content="{x:Static local:Strings.DeleteSelected}" HorizontalAlignment="Left" Margin="10,4,10,0"
                         VerticalAlignment="Top" Width="106" Height="20" Command="commands:CommandLibrary.Delete" DockPanel.Dock="Right"/>
-                <Label Content="Files found with redundancy:" HorizontalAlignment="Left" Margin="10,4,0,0" VerticalAlignment="Top" 
+                <Label Content="{x:Static local:Strings.DuplicateFilesFound}" HorizontalAlignment="Left" Margin="10,4,0,0" VerticalAlignment="Top" 
                        DockPanel.Dock="Left" Height="26" Width="238"/>
             </DockPanel>
             <StatusBar DockPanel.Dock="Bottom" Height="20">
@@ -139,15 +139,15 @@
                 </ListView.ItemContainerStyle>
                 <ListView.View>
                     <GridView>
-                        <GridViewColumn Header="Name" DisplayMemberBinding="{Binding Path=Name}" Width="100"/>
-                        <GridViewColumn Header="Directory" DisplayMemberBinding="{Binding Path=DirectoryName}" Width="360"/>
-                        <GridViewColumn Header="Size (Bytes)" DisplayMemberBinding="{Binding Path=DisplayFileSize}" Width="80"/>
-                        <GridViewColumn Header="State" CellTemplate="{StaticResource StateTemplate}" Width="80"/>
+                        <GridViewColumn Header="{x:Static local:Strings.HeaderName}" DisplayMemberBinding="{Binding Path=Name}" Width="100"/>
+                        <GridViewColumn Header="{x:Static local:Strings.HeaderDirectory}" DisplayMemberBinding="{Binding Path=DirectoryName}" Width="360"/>
+                        <GridViewColumn Header="{x:Static local:Strings.HeaderSize}" DisplayMemberBinding="{Binding Path=DisplayFileSize}" Width="80"/>
+                        <GridViewColumn Header="{x:Static local:Strings.HeaderState}" CellTemplate="{StaticResource StateTemplate}" Width="80"/>
                     </GridView>
                 </ListView.View>
                 <ListView.ContextMenu>
                     <ContextMenu>
-                        <MenuItem Command="commands:CommandLibrary.OpenFolder" Header="Open file location"/>
+                        <MenuItem Command="commands:CommandLibrary.OpenFolder" Header="{x:Static local:Strings.MiOpenFileLocation}"/>
                         <MenuItem Command="commands:CommandLibrary.Delete" />
                         <MenuItem Command="commands:CommandLibrary.Undelete" />
                         <MenuItem Command="commands:CommandLibrary.Shortcut" />

@@ -4,7 +4,7 @@
         xmlns:fileMatcher="clr-namespace:FileMatcherApp" 
         xmlns:local="clr-namespace:FileMatcherApp"
         xmlns:rules="clr-namespace:FileMatcherApp.Models"
-        Title="Filter" Height="80" Width="300">
+        Title="{x:Static local:Strings.FilterWindowTitle}" Height="80" Width="300">
     <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
