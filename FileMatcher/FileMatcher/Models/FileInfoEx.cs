@@ -76,29 +76,41 @@ namespace FileMatcherApp.Models
         {
             get
             {
-                if (Shortcut == null)
+                if (ShortcutTarget == null)
                 {
                     return State;
                 }
-                var tooltip = string.Format("soft-linked to '{0}' as '{1}'", Shortcut.FullName, ShortcutName);
+                var tooltip = string.Format("soft-linked to '{0}' as '{1}'", ShortcutTarget.FullName, ShortcutName);
                 return tooltip;
             }
         }
 
-        public FileInfoEx Shortcut
+        public FileInfoEx ShortcutTarget
         {
             get { return _shortcut; }
             set
             {
-                if (_shortcut == value)
+                if (_shortcut != value)
                 {
-                    return;
+                    if (_shortcut != null)
+                    {
+                        _shortcut.ShortcutCount--;
+                    }
+                    _shortcut = value;
+                    if (_shortcut != null)
+                    {
+                        _shortcut.ShortcutCount++;
+                    }
+                    // NOTE IsSelectedToDelete is set in a preceding operation appropriately
+                    // so no need to set it again here
+                    PropertyChanged(this, new PropertyChangedEventArgs("State"));
                 }
-                _shortcut = value;
-                // NOTE IsSelectedToDelete is set in a preceding operation appropriately
-                // so no need to set it again here
-                PropertyChanged(this, new PropertyChangedEventArgs("State"));
             }
+        }
+
+        public int ShortcutCount
+        {
+            get; set;
         }
 
         public string ShortcutName { get; set; }
@@ -124,11 +136,20 @@ namespace FileMatcherApp.Models
         {
             get
             {
-                if (Shortcut != null)
+                if (ShortcutTarget != null)
                 {
-                    return "Softlinked";
+                    return "Referencing";
                 }
-                return IsSelectedToDelete ? "To Delete" : "To Keep";
+                if (IsSelectedToDelete)
+                {
+                    return "To delete";
+                }
+                if (ShortcutCount > 0)
+                {
+                    // TODO this should be prevented from deletion
+                    return "Referenced";
+                }
+                return "To keep";
             }
         }
 

@@ -272,7 +272,7 @@ namespace FileMatcherApp.Views
                 if (actionType == DeleteOrUndeleteOperation.ActionTypes.Undelete)
                 {
                     // this is to clear the shortcut for file to undelete
-                    if (file.Shortcut != null)
+                    if (file.ShortcutTarget != null)
                     {
                         var unshortcut = new ShortcutOperation(file);
                         command.Operations.Add(unshortcut);
@@ -344,11 +344,11 @@ namespace FileMatcherApp.Views
             for (var i = 0; i < IdenticalFiles.Count; i++)
             {
                 var f = IdenticalFiles[i];
-                if (f.Shortcut != null)
+                if (f.ShortcutTarget != null)
                 {
                     var shellLink = (IShellLinkW)new CShellLink();
                     shellLink.SetDescription(f.ShortcutName);
-                    shellLink.SetPath(f.Shortcut.FullName);
+                    shellLink.SetPath(f.ShortcutTarget.FullName);
                     var linkFile = (IPersistFile)shellLink;
                     var name = Path.Combine(f.DirectoryName, f.ShortcutName) + ".lnk";
                     linkFile.Save(name, true);
@@ -622,6 +622,12 @@ namespace FileMatcherApp.Views
             var command = new UserCommand();
             foreach (var file in _filesToShortcut)
             {
+                if (file.ShortcutCount > 0)
+                {
+                    // TODO notify user
+                    continue;// can't do short cut as it's being referenced
+                }
+
                 // should delete the file first
                 // NOTE the deletion operation needs to be performed anyway so the previous deletion won't be unintentionally undone 
                 var delop = new DeleteOrUndeleteOperation(DeleteOrUndeleteOperation.ActionTypes.Delete, file);
@@ -805,7 +811,7 @@ namespace FileMatcherApp.Views
                 if (FileMatcherWorkingObject.Canceller.Canceled)
                 {
                     Status = Strings.StatusCanceled;
-                    ProgressPercentage = 100;
+                    ProgressPercentage = 0;
                     IsSearching = false;
                 }
                 else
@@ -814,7 +820,7 @@ namespace FileMatcherApp.Views
                     {
                         case FileMatcher.FileMatcher.Statuses.Done:
                             Status = Strings.StatusDone;
-                            ProgressPercentage = 100;
+                            ProgressPercentage = 0;
                             IsSearching = false;
                             break;
                         case FileMatcher.FileMatcher.Statuses.Scanning:

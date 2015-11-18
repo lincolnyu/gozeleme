@@ -37,6 +37,11 @@ namespace FileMatcherApp.Models
             public static FileComparer Instance = new FileComparer();
         }
 
+        /// <summary>
+        ///  This is to notify the backend through the updator
+        /// </summary>
+        public event NotifyCollectionChangedEventHandler CollectionRemoved;
+
         public event NotifyCollectionChangedEventHandler CollectionChanged;
 
         public new void Add(FileInfoEx fileInfo)
@@ -65,9 +70,19 @@ namespace FileMatcherApp.Models
             var obj = this[index];
             UpdateDuplicateCountPreRemoving(index);
             base.RemoveAt(index);
+
             if (CollectionChanged != null)
             {
-                CollectionChanged(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, obj, index));
+                CollectionChanged(this,
+                    new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove,
+                    obj, index));
+            }
+
+            if (CollectionRemoved != null)
+            {
+                CollectionRemoved(this,
+                    new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove,
+                    obj, index));
             }
         }
 

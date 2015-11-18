@@ -46,16 +46,16 @@ namespace FileMatcherApp.Controllers
         public void Redo()
         {
             _originalShortcutFileName = Replaced.ShortcutName;
-            _originalTarget = Replaced.Shortcut;
+            _originalTarget = Replaced.ShortcutTarget;
 
             Replaced.ShortcutName = ShortcutFileName;
-            Replaced.Shortcut = Target;
+            Replaced.ShortcutTarget = Target;
         }
 
         public void Undo()
         {
             Replaced.ShortcutName = _originalShortcutFileName;
-            Replaced.Shortcut = _originalTarget;
+            Replaced.ShortcutTarget = _originalTarget;
         }
 
         #endregion

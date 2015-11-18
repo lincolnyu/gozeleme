@@ -67,49 +67,51 @@ namespace FileMatcher
         /// <returns>An integer that indicates the comparison result</returns>
         public static int CompareBinaryContents(FileInfo f1, FileInfo f2, long length)
         {
-            var fs1 = f1.OpenRead();
-            var fs2 = f2.OpenRead();
-            const long lenThr = 64 * 1024 * 1024;
-            const int smallBuf = 1024 * 1024;
-            const int largeBuf = 16 * 1024 * 1024;
-            var bufSize = length > lenThr ? largeBuf : smallBuf;
-            var buf1 = new byte[bufSize];
-            var buf2 = new byte[bufSize];
-
-            for (var totalRead = 0; totalRead < length; )
+            using (var fs1 = f1.OpenRead())
+            using (var fs2 = f2.OpenRead())
             {
-                var read1 = fs1.Read(buf1, 0, bufSize);
-                var read2 = fs2.Read(buf2, 0, bufSize);
-                if (read1 != read2)
+                const long lenThr = 64 * 1024 * 1024;
+                const int smallBuf = 1024 * 1024;
+                const int largeBuf = 16 * 1024 * 1024;
+                var bufSize = length > lenThr ? largeBuf : smallBuf;
+                var buf1 = new byte[bufSize];
+                var buf2 = new byte[bufSize];
+
+                for (var totalRead = 0; totalRead < length;)
                 {
-                    throw new Exception("Unexpected discrepancy in file length");
-                }
-                var read = read1 < read2 ? read1 : read2;
-                totalRead += read;
-                if (read == 0)
-                {
-                    // NOTE it is possible that some system files can change their sizes
-                    return read1.CompareTo(read2);
-                }
-                for (var i = 0; i < read; i++)
-                {
-                    var b1 = buf1[i];
-                    var b2 = buf2[i];
-                    if (b1 == b2)
+                    var read1 = fs1.Read(buf1, 0, bufSize);
+                    var read2 = fs2.Read(buf2, 0, bufSize);
+                    if (read1 != read2)
                     {
-                        continue;
+                        throw new Exception("Unexpected discrepancy in file length");
                     }
-                    if (b1 < b2)
+                    var read = read1 < read2 ? read1 : read2;
+                    totalRead += read;
+                    if (read == 0)
                     {
-                        return -1;
+                        // NOTE it is possible that some system files can change their sizes
+                        return read1.CompareTo(read2);
                     }
-                    if (b1 > b2)
+                    for (var i = 0; i < read; i++)
                     {
-                        return 1;
+                        var b1 = buf1[i];
+                        var b2 = buf2[i];
+                        if (b1 == b2)
+                        {
+                            continue;
+                        }
+                        if (b1 < b2)
+                        {
+                            return -1;
+                        }
+                        if (b1 > b2)
+                        {
+                            return 1;
+                        }
                     }
                 }
+                return 0;
             }
-            return 0;
         }
 
         #endregion

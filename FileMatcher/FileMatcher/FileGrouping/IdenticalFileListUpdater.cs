@@ -34,10 +34,10 @@ namespace FileMatcherApp.FileGrouping
         private void BindSource()
         {
             Adaptor.IdenticalFileGroups.CollectionChanged += FileGroupsOnCollectionChanged;
-            IdenticalFileList.CollectionChanged += IdenticalFileListOnCollectionChanged;
+            IdenticalFileList.CollectionRemoved += IdenticalFileListOnCollectionRemoved;
         }
 
-        private void IdenticalFileListOnCollectionChanged(object sender, NotifyCollectionChangedEventArgs args)
+        private void IdenticalFileListOnCollectionRemoved(object sender, NotifyCollectionChangedEventArgs args)
         {
             // TODO if this is not sufficient, use sync lock
             // only deals with removal initiated from the UI
