@@ -130,9 +130,23 @@ namespace FileMatcherApp.Views
             e.Handled = true;
         }
 
+
         private void LstExclFoldersOnPreviewDrop(object sender, DragEventArgs args)
         {
-
+            var added = false;
+            foreach (var ss in args.Data.GetFormats().Select(f => args.Data.GetData(f)).OfType<string[]>())
+            {
+                foreach (var s in ss.Where(Directory.Exists))
+                {
+                    AddExclFolder(s);
+                    added = true;
+                }
+                if (added)
+                {
+                    break;
+                }
+            }
+            args.Handled = true;
         }
 
         private void LstExclFoldersOnSelectionChanged(object sender, SelectionChangedEventArgs e)
