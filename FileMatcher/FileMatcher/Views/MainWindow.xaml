@@ -3,9 +3,9 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:local="clr-namespace:FileMatcherApp"
         Title="{x:Static local:Strings.AppName}" Height="360" Width="480"
-        ResizeMode="NoResize" WindowStartupLocation="CenterScreen" AllowDrop="True" 
-        PreviewDrop="MainWindowOnPreviewDrop">
-    <Grid AllowDrop="True">
+        ResizeMode="NoResize" WindowStartupLocation="CenterScreen" AllowDrop="True"
+        PreviewDrop="WindowOnPreviewDrop">
+    <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition/>
             <ColumnDefinition Width="5"/>
@@ -19,10 +19,9 @@
         <DockPanel Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" LastChildFill="True">
             <StackPanel Orientation="Horizontal" DockPanel.Dock="Top" Margin="3">
                 <TextBlock Text="{x:Static local:Strings.Path}"/>
-                <TextBox Name="TxtFileToAdd" HorizontalAlignment="Left" Height="21" TextWrapping="NoWrap" 
-                 Text="" VerticalAlignment="Top" Width="240" AllowDrop="True" 
-                 PreviewDrop="TxtFileToAdd_OnPreviewDrop"
-                 TextChanged="TxtFileToAdd_OnTextChanged"/>
+                <TextBox Name="TxtFolderToAdd" HorizontalAlignment="Left" Height="21" TextWrapping="NoWrap" 
+                 Text="" VerticalAlignment="Top" Width="240"
+                 TextChanged="TxtFileToAddOnTextChanged"/>
                 <Button Name="BtnAdd" Content="..." HorizontalAlignment="Left" VerticalAlignment="Top" Width="44" Height="21" 
                         ToolTip="Choose Location" Click="BtnAddLocation" Margin="0,0,5,0"/>
                 <Button Name="BtnRemoveFolder" Content="{x:Static local:Strings.RemoveSelectedFolders}" HorizontalAlignment="Left" VerticalAlignment="Top" 
@@ -43,21 +42,20 @@
             <Button Name="BtnAddIncludedFolder" DockPanel.Dock="Top" 
                     Content="{x:Static local:Strings.AddAsIncludedFolder}" HorizontalAlignment="Stretch" VerticalAlignment="Top" 
                     Height="21" Click="BtnAddIncludedFolderOnClick" IsEnabled="False"/>
-            <ListBox Name="LstFolders" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" 
-                 AllowDrop="True" PreviewDrop="LstFolders_OnPreviewDrop" 
-                 SelectionChanged="LstFolders_OnSelectionChanged">
+            <ListBox Name="LstIncludedFolders" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" 
+                 AllowDrop="True" PreviewDrop="LstIncludedFoldersOnPreviewDrop" 
+                 SelectionChanged="LstIncludedFoldersOnSelectionChanged">
             </ListBox>
         </DockPanel>
         <DockPanel Grid.Row="1" Grid.Column="2" LastChildFill="True">
             <Button Name="BtnAddExcludedFolder" Content="{x:Static local:Strings.AddAsExcludedFolder}"
                     HorizontalAlignment="Stretch" DockPanel.Dock="Top"
                     VerticalAlignment="Top" Height="21" Click="BtnAddExcludedFolderOnClick" IsEnabled="False"/>
-            <ListBox Name="LstExclFolders" HorizontalAlignment="Stretch" 
+            <ListBox Name="LstExcludedFolders" HorizontalAlignment="Stretch" 
                      VerticalAlignment="Stretch" 
-                 AllowDrop="True" PreviewDrop="LstExclFoldersOnPreviewDrop" 
-                 SelectionChanged="LstExclFoldersOnSelectionChanged">
+                 AllowDrop="True" PreviewDrop="LstExcludedFoldersOnPreviewDrop" 
+                 SelectionChanged="LstExcludedFoldersOnSelectionChanged">
             </ListBox>
         </DockPanel>
-      
     </Grid>
 </Window>
