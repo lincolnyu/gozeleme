@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.23107.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileMatcherApp", "FileMatcher\FileMatcherApp.csproj", "{FBC4D53F-6CD9-47FC-B832-70F0AFCEA59A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileMatcherApp", "FileMatcherApp\FileMatcherApp.csproj", "{FBC4D53F-6CD9-47FC-B832-70F0AFCEA59A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileMatcher", "FileMatcherLib\FileMatcher.csproj", "{4983EC14-AB0D-4702-9376-69540F618AD5}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileMatcher", "FileMatcher\FileMatcher.csproj", "{4983EC14-AB0D-4702-9376-69540F618AD5}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileMatcherConsole", "FileMatcherConsole\FileMatcherConsole.csproj", "{963A8C90-578F-4D8E-B94F-84EDA1FBEF83}"
 EndProject

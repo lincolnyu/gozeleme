@@ -8,5 +8,6 @@
 /FileMatcher/FileMatcher/obj
 /FileMatcher/FileMatcherConsole/bin
 /FileMatcher/FileMatcherConsole/obj
-/FileMatcher/FileMatcherLib/bin
-/FileMatcher/FileMatcherLib/obj
+/FileMatcher/FileMatcherApp/publish
+/FileMatcher/FileMatcherApp/bin/
+/FileMatcher/FileMatcherApp/obj/

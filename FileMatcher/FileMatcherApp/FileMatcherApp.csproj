@@ -31,6 +31,10 @@
     <MapFileExtensions>true</MapFileExtensions>
     <InstallUrl>http://gozleme.codeplex.com/releases/clickonce/</InstallUrl>
     <UpdateUrl>http://gozleme.codeplex.com/releases/clickonce/</UpdateUrl>
+    <SupportUrl>https://gozleme.codeplex.com/wikipage%3ftitle=How%2520to%2520use</SupportUrl>
+    <TargetCulture>en-AU</TargetCulture>
+    <ProductName>DuplicateFileLocator</ProductName>
+    <PublisherName>quanbenSoft</PublisherName>
     <CreateWebPageOnPublish>true</CreateWebPageOnPublish>
     <WebPage>publish.htm</WebPage>
     <ApplicationRevision>1</ApplicationRevision>
@@ -197,7 +201,7 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\FileMatcherLib\FileMatcher.csproj">
+    <ProjectReference Include="..\FileMatcher\FileMatcher.csproj">
       <Project>{4983ec14-ab0d-4702-9376-69540f618ad5}</Project>
       <Name>FileMatcher</Name>
     </ProjectReference>

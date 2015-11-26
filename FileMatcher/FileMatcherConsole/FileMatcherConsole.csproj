@@ -53,7 +53,7 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\FileMatcherLib\FileMatcher.csproj">
+    <ProjectReference Include="..\FileMatcher\FileMatcher.csproj">
       <Project>{4983ec14-ab0d-4702-9376-69540f618ad5}</Project>
       <Name>FileMatcher</Name>
     </ProjectReference>
