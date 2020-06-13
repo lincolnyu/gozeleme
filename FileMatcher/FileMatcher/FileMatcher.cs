@@ -240,18 +240,12 @@ namespace FileMatcher
 
         private void UpdateStatus()
         {
-            if (StatusUpdated != null)
-            {
-                StatusUpdated(this);
-            }
+            StatusUpdated?.Invoke(this);
         }
 
         private void UpdateProgress()
         {
-            if (ProgressUpdated != null)
-            {
-                ProgressUpdated(this);
-            }
+            ProgressUpdated?.Invoke(this);
         }
 
         private void ScanFiles(object o)
@@ -302,7 +296,7 @@ namespace FileMatcher
             CurrentDirectory = null;
             UpdateStatus();
         }
-        
+
         #endregion
     }
 }

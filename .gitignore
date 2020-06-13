@@ -4,10 +4,9 @@
 
 *.suo
 *.user
-/FileMatcher/FileMatcher/bin
-/FileMatcher/FileMatcher/obj
-/FileMatcher/FileMatcherConsole/bin
-/FileMatcher/FileMatcherConsole/obj
-/FileMatcher/FileMatcherApp/publish
-/FileMatcher/FileMatcherApp/bin/
-/FileMatcher/FileMatcherApp/obj/
+.vs/
+bin/
+obj/
+publish/
+packages/
+packages.config
