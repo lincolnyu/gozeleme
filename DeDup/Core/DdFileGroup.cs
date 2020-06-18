@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using System.IO;
 
 namespace DeDup.Core
 {
@@ -25,7 +27,7 @@ namespace DeDup.Core
             Files.Add(f);
         }
 
-        public IEnumerable<DdFileGroup> Split()
+        public IEnumerable<DdFileGroup> Split(Action<DdFile> addFailedFile)
         {
             var files = new List<DdFile>();
             foreach (var f in Files)
@@ -34,49 +36,98 @@ namespace DeDup.Core
                 {
                     files.Add(f);
                 }
+                else
+                {
+                    addFailedFile(f);
+                }
             }
             if (files.Count >= 2)
             {
-                foreach (var ll in SplitRecursive(files, Length))
+                foreach (var ll in SplitRecursive(files, Length, addFailedFile))
                 {
-                    System.Diagnostics.Debug.Assert(ll.Count > 1);
-                    var r = new DdFileGroup(ll);
-                    System.Diagnostics.Debug.Assert(r.Files.Count > 1);
-                    yield return r;
+                    yield return new DdFileGroup(ll);
                 }
             }
         }
 
-        private static IEnumerable<List<DdFile>> SplitRecursive(List<DdFile> group, long remaining)
+        private static bool TryReadByte(DdFile f, out byte b)
+        {
+            try
+            {
+                b = f.ReadByteAffirmative();
+                return true;
+            }
+            catch (IOException)
+            {
+                b = default;
+                return false;
+            }
+        }
+
+        private static IEnumerable<List<DdFile>> SplitRecursive(List<DdFile> group, long remaining, Action<DdFile> addFailedFile)
         {
             System.Diagnostics.Debug.Assert(group.Count > 1);
+        _next:
             while(remaining-- > 0)
             {
-                var b0 = group[0].ReadByteAffirmative();
-                for (var j = 1; j < group.Count; j++)
+                byte bLast;
+                var j = group.Count-1;
+                while (!TryReadByte(group[j], out bLast))
                 {
-                    var bj = group[j].ReadByteAffirmative();
-                    if (bj != b0)
+                    group[j].FinalizeRead();
+                    addFailedFile(group[j]);
+                    group.RemoveAt(j);
+                    if (group.Count == 1)
                     {
-                        // 0 to j-1 is a group
+                        goto _final;
+                    }
+                }
+                while (--j >= 0)
+                {
+                    byte bj;
+                    for (; !TryReadByte(group[j], out bj); j--)
+                    {
+                        group[j].FinalizeRead();
+                        addFailedFile(group[j]);
+                        group.RemoveAt(j);
+                        if (j == 0)
+                        {
+                            if (group.Count == 1)
+                            {
+                                goto _final;
+                            }
+                            goto _next;
+                        }
+                    }
+                    
+                    if (bj != bLast)
+                    {
+                        // last down to j+1 is a group
                         var dict = new Dictionary<byte, List<DdFile>>();
-                        dict[b0] = group.GetRange(0, j);
+                        dict[bLast] = group.GetRange(j+1, group.Count-j-1);
                         dict[bj] = new List<DdFile>{group[j]};
 
-                        for (j++ ; j < group.Count; j++)
+                        while (--j >= 0)
                         {
-                            var b = group[j].ReadByteAffirmative();
-                            if (!dict.TryGetValue(b, out var lf))
+                            if (TryReadByte(group[j], out var b))
                             {
-                                lf = new List<DdFile>();
+                                if (!dict.TryGetValue(b, out var lf))
+                                {
+                                    lf = new List<DdFile>();
+                                }
+                                lf.Add(group[j]);
                             }
-                            lf.Add(group[j]);
+                            else
+                            {
+                                group[j].FinalizeRead();
+                                addFailedFile(group[j]);
+                            }
                         }
                         foreach(var ll in dict.Values)
                         {
                             if (ll.Count > 1)
                             {
-                                var sr = SplitRecursive(ll, remaining);
+                                var sr = SplitRecursive(ll, remaining, addFailedFile);
                                 foreach (var s in sr)
                                 {
                                     yield return s;
@@ -89,9 +140,17 @@ namespace DeDup.Core
                         }
                         yield break;
                     }
-                }
+                }                
             }
-            yield return group;
+        _final:
+            foreach (var f in group)
+            {
+                f.FinalizeRead();
+            }
+            if (group.Count > 1)    // Note group members may be removed so need to check again
+            {
+                yield return group;
+            }
         }
     }
 }

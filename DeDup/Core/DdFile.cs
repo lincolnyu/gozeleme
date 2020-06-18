@@ -36,11 +36,13 @@ namespace DeDup.Core
             if (_stream != null)
             {
                 _stream.Close();
+                _stream = null;
             }
         }
 
         public byte ReadByteAffirmative()
         {
+            System.Diagnostics.Debug.Assert(_stream != null);
             return (byte)_stream.ReadByte();
         }
     }

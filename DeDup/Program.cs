@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -154,10 +155,7 @@ namespace DeDup
             ddPar.Dirs = dirs;
 
             ddPar.ExcludeDir = exclDirs.Count > 0? new Predicate<DirectoryInfo>(
-                d=>
-                {
-                    return exclDirs.Contains(d.FullName);
-                }
+                d=>exclDirs.Contains(d.FullName)
             ) : null;
             ddPar.IncludeFile = inclFilePatterns.Count > 0? new Predicate<FileInfo>(
                 f=>
@@ -207,6 +205,17 @@ namespace DeDup
                 {
                     output.WriteLine($"{f.File.Name}\t{f.File.DirectoryName}\t{StringifyFileLength(f.FileLength)}\t{f.File.CreationTime}");
                 }                
+            }
+
+            if (dd.FailedFiles.Count > 0)
+            {
+                var bar = outputToFile? CcBar : ConsoleBar;
+                output.WriteLine(bar.Replace('-', '='));
+                output.WriteLine($"Failed to read {dd.FailedFiles.Count} files.");
+                foreach (var ff in dd.FailedFiles.OrderBy(x=>x.File.FullName))
+                {
+                    output.WriteLine(ff.File.FullName);
+                }
             }
         }
     }
