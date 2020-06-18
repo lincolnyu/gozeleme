@@ -2,48 +2,97 @@
 using System.IO;
 using System.Linq;
 using System.Collections.Generic;
+using System.Text;
 
 namespace CcDupResolver
 {
     class Program
     {
-        class DupFile
-        {
-            public string Dir;
-            public string File;
-            public string FullPath => Path.Combine(Dir, File);
-        }
+        const string Bar = "------------------------------------------------------------------------------------------------------------------------------------------------------";
 
-        static void Main(string[] args)
+        static void Resolve(string ccDupListFileName)
         {
-            const string Bar = "------------------------------------------------------------------------------------------------------------------------------------------------------";
-            using var f = new StreamReader(args[0]);
+            using var ccDupList = new StreamReader(ccDupListFileName);
             using var fLog = new StreamWriter("log.txt");
-            var dup = new List<DupFile>();
+            var dupGroup = new List<DupFile>();
             var iLine = 0;
             var error = false;
-            for (; !f.EndOfStream; iLine++)
+            var totalFilesRemoved = 0;
+            long totalBytesRemoved = 0;
+
+            void proc()
             {
-                var l = f.ReadLine();
+                if (!error)
+                {
+                    if (dupGroup.Count < 2)
+                    {
+                        if (iLine > 0)
+                        {
+                            fLog.WriteLine($"Line {iLine}: Concluding a non-duplicate file group.");
+                        }
+                        return;
+                    }
+
+                    var dupGroupSorted = dupGroup.OrderBy(x=>x.Dir.Length).ToArray();
+                    var baseDir = dupGroupSorted[0].Dir;
+                    var dupsFlattened = new List<string>();
+                    for (var i = 1; i < dupGroupSorted.Length; i++)
+                    {
+                        if (File.Exists(dupGroupSorted[i].CcDupFullPath))
+                        {
+                            // The file is a representative 
+                            using var ccdupir = new StreamReader(dupGroupSorted[i].CcDupFullPath);
+                            while (!ccdupir.EndOfStream)
+                            {
+                                var origDup = ccdupir.ReadLine();
+                                var origDupDir = Path.GetDirectoryName(origDup);
+                                if (!Path.IsPathRooted(origDup))
+                                {
+                                    origDup = FileHelper.ToAbsolute(origDup, 
+                                        new DirectoryInfo(dupGroupSorted[i].Dir)).FullName;
+                                }
+                                var origCcDup = DupFile.ToCcDup(origDup);
+                                if (File.Exists(origCcDup))
+                                {
+                                    using var ccdpic = new StreamWriter(origCcDup);
+                                    ccdpic.WriteLine($"{FileHelper.ToRelative(new FileInfo(dupGroupSorted[0].FullPath), new DirectoryInfo(origDupDir))}");
+                                    dupsFlattened.Add(origDup);
+                                }
+                                else
+                                {
+                                    fLog.WriteLine($"Line {iLine}: original placeholder file '{origCcDup}' not found.");
+                                }
+                            }
+                        }
+                        using var ccdupiw = new StreamWriter(dupGroupSorted[i].CcDupFullPath);
+                        ccdupiw.WriteLine($"{FileHelper.ToRelative(new FileInfo(dupGroupSorted[0].FullPath), new DirectoryInfo(dupGroupSorted[i].Dir))}");
+                        totalBytesRemoved += dupGroupSorted[i].FileLength;
+                        dupsFlattened.Add(dupGroupSorted[i].FullPath);
+                        File.Delete(dupGroupSorted[i].FullPath);
+                    }
+
+                    using var ccdupMaster = new StreamWriter(dupGroupSorted[0].CcDupFullPath);
+                    foreach (var dup in dupsFlattened)
+                    {
+                        ccdupMaster.WriteLine($"{FileHelper.ToRelative(new FileInfo(dup), new DirectoryInfo(dupGroupSorted[0].Dir))}");
+                    }
+                    totalFilesRemoved += dupGroupSorted.Length-1;
+                }
+                dupGroup.Clear();
+            }
+
+            for (; !ccDupList.EndOfStream; iLine++)
+            {
+                var l = ccDupList.ReadLine();
                 if (l == Bar)
                 {
-                    if (!error)
-                    {
-                        var a = dup.OrderBy(x=>x.Dir.Length).ToArray();
-                        for (var i = 1; i < a.Length; i++)
-                        {
-                            var ddfn = Path.Combine(a[i].Dir, a[i].File + "-duplicate.txt");
-                            using var dfile = new StreamWriter(ddfn);
-                            dfile.WriteLine($"{Path.Combine(a[0].Dir, a[0].File)}");
-                            File.Delete(a[i].FullPath);
-                        }
-                    }
-                    dup.Clear();
+                    proc();
+                    continue;
                 }
                 var segs = l.Split('\t');
                 if (segs.Length < 2)
                 {
-                    fLog.WriteLine($"Line {iLine} bad format.");
+                    fLog.WriteLine($"Line {iLine}: '{l}' Bad format.");
                     error = true;
                     continue;
                 }
@@ -56,11 +105,69 @@ namespace CcDupResolver
                 };
                 if (!File.Exists(dupFile.FullPath))
                 {
-                    fLog.WriteLine($"Line {iLine} file '{dupFile.FullPath}' not found.");
+                    fLog.WriteLine($"Line {iLine}: File '{dupFile.FullPath}' not found.");
                     error = true;
                     continue;
                 }
-                dup.Add(dupFile);
+                dupGroup.Add(dupFile);
+            }
+            proc();
+            fLog.WriteLine($"Totally {totalBytesRemoved} bytes ({totalFilesRemoved} files) removed.");
+            Console.WriteLine($"Totally {totalBytesRemoved} bytes ({totalFilesRemoved} files) removed.");
+        }
+
+        static void UpgradeToRelativePath(string dirStr)
+        {
+            var dir = new DirectoryInfo(dirStr);
+            var ccdupList = dir.GetFiles("*.ccdup", SearchOption.AllDirectories);
+            var itemsChanged = 0;
+            foreach (var ccdup in ccdupList)
+            {
+                var refs = new List<string>();
+                var ccdupDir = ccdup.Directory;
+                {
+                    using var ccdupfs = ccdup.Open(FileMode.Open);
+                    using var ccdupr = new StreamReader(ccdupfs);
+                    while (!ccdupr.EndOfStream)
+                    {
+                        var l = ccdupr.ReadLine();
+                        if (Path.IsPathRooted(l))
+                        {
+                            refs.Add(FileHelper.ToRelative(new FileInfo(l), ccdupDir));
+                            itemsChanged++;
+                        }
+                        else
+                        {
+                            refs.Add(l);
+                        }
+                    }
+                }
+                {
+                    using var ccdupfs = ccdup.Open(FileMode.Create);
+                    using var ccdupw = new StreamWriter(ccdupfs);
+                    foreach (var r in refs)
+                    {
+                        ccdupw.WriteLine(r);
+                    }
+                }
+            }
+            Console.WriteLine($"{ccdupList.Length} ccdup files upgraded with {itemsChanged} items changed.");
+        }
+
+        static void Main(string[] args)
+        {
+            if (Directory.Exists(args[0]))
+            {
+                UpgradeToRelativePath(args[0]);
+            }
+            else if (File.Exists(args[0]))
+            {
+                Resolve(args[0]);
+            }
+            else
+            {
+                Console.WriteLine("Usage: <file> CC duplicate file list");
+                Console.WriteLine("       <dir>  Make sure all ccdup files use relative directories");
             }
         }
     }
