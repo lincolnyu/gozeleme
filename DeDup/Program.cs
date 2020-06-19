@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using DeDup.Core;
@@ -20,6 +19,10 @@ namespace DeDup
         const string ArgOutputFile = "--output";
         const string ArgThreadNum = "--threads";
         const string ArgLogLevl = "--log-level";
+        const string ArgIncludeCcDup = "--include-ccdup";
+
+        const string ArgQuiet = "--quiet";
+        const string ArgQuietAbbr = "-q";
 
         const string LogLevelError = "ERROR";
         const string LogLevelWarning = "WARNING";
@@ -30,8 +33,10 @@ namespace DeDup
             Console.WriteLine($"[{ArgDir} <dir>...] [{ArgExcludeDir} <excluded_dir>...] "
                 + "[{ArgExcludeFilePattern} <excluded_file_pattern>...] "
                 + "[{ArgIncludeFilePattern} <included_file_pattern>...] "
-                + "[{ArgOutputFile} <output_file>] [{ArgThreadNum} <thread_num=0/*System*/,(1)/*Single*/,2,3,4...>] "
-                + $"[{ArgLogLevl} <log_level={LogLevelError}|({LogLevelWarning})|{LogLevelVerbose}>]");
+                + "[{ArgOutputFile}=<output_file>] [{ArgThreadNum}=<thread_num=0/*System*/|(1)/*Single*/|2|3|4|...>] "
+                + $"[{ArgLogLevl}=<log_level={LogLevelError}|({LogLevelWarning})|{LogLevelVerbose}>]"
+                + $"[{ArgIncludeCcDup}]=<(0)|1>"
+                + $"[{ArgQuiet}|{ArgQuietAbbr}]");
             Console.WriteLine("--help|-h");
         }
         
@@ -67,9 +72,36 @@ namespace DeDup
             return $"{valRound} {suffices[suffices.Length-1]}";
         }
 
+        static bool TryGetArgValue(string arg, string argHead, out string sVal, bool checkEqualSign=true)
+        {
+            sVal = "";
+            return TryGetArgValueRef(arg, argHead, ref sVal, checkEqualSign);
+        }
+
+        static bool TryGetArgValueRef(string arg, string argHead, ref string sVal, bool checkEqualSign=true)
+        {
+            if (!arg.StartsWith(argHead))
+            {
+                return false;
+            }
+            if (argHead.Length < arg.Length)
+            {
+                if (arg[argHead.Length]=='=')
+                {
+                    sVal = arg.Substring(argHead.Length+1).Trim();
+                    return true;   
+                }
+            }
+            else if (checkEqualSign)
+            {
+                throw new ArgumentException($"{arg} expected to be followed by '='.");
+            }
+            return false;
+        }
+
         static void Main(string[] args)
         {
-            string activeArg = null;
+            string leadingArg = null;
             var ddPar = new DeDupParameters();
             var dirs = new List<DirectoryInfo>();
             var exclDirs = new HashSet<string>();
@@ -77,83 +109,141 @@ namespace DeDup
             var inclFilePatterns = new List<string>();
             var threadNum = 1;
             string outputFileName = null;
-            foreach (var arg in args)
+            var includeCcDup = false; 
+            var quiet = false;
+            var logger = new Logger();
+
+            try
             {
-                switch (activeArg)
+                foreach (var arg in args)
                 {
-                    case ArgDir:
-                        if (Directory.Exists(arg))
+                    switch (leadingArg)
+                    {
+                        case null:
+                            if (TryGetArgValue(arg, ArgThreadNum, out var sThreadNum))
+                            {
+                                if (!int.TryParse(sThreadNum, out threadNum))
+                                {
+                                    throw new ArgumentException($"Invalid {ArgThreadNum} value. Integer expected instead of '{sThreadNum}'.");
+                                }
+                            }
+                            else if (TryGetArgValue(arg, ArgLogLevl, out var sLogLevel))
+                            {
+                                switch (sLogLevel.ToUpper())
+                                {
+                                    case LogLevelError:
+                                        logger.LogLevel = Logger.LogLevels.Error;
+                                        break;
+                                    case LogLevelWarning:
+                                        logger.LogLevel = Logger.LogLevels.Warning;
+                                        break;
+                                    case LogLevelVerbose:
+                                        logger.LogLevel = Logger.LogLevels.Verbose;
+                                        break;
+                                    default:
+                                        throw new ArgumentException($"Invalid {ArgLogLevl} value: '{sLogLevel}'.");
+                                }
+                            }
+                            else if (TryGetArgValue(arg, ArgIncludeCcDup, out var sIncludeCcDup))
+                            {
+                                switch (sIncludeCcDup.ToUpper())
+                                {
+                                    case "0":
+                                    case "FALSE":
+                                        includeCcDup = false;
+                                        break;
+                                    case "1":
+                                    case "TRUE":
+                                        includeCcDup = true;
+                                        break;
+                                    default:
+                                        throw new ArgumentException($"Invalid {ArgIncludeCcDup} value: '{sLogLevel}'.");
+                                }
+                            }
+                            else if (TryGetArgValueRef(arg, ArgOutputFile, ref outputFileName))
+                            {
+                            }
+                            else
+                            {
+                                switch (arg)
+                                {
+                                    case ArgQuiet:
+                                    case ArgQuietAbbr:
+                                        quiet = true;
+                                        leadingArg = null;
+                                        break;                                    
+                                    case "--help":
+                                    case "-h":
+                                        PrintHelp();
+                                        return;
+                                }
+                                leadingArg = arg;
+                            }
+                            break;
+                        case ArgDir:
+                            if (Directory.Exists(arg))
+                            {
+                                dirs.Add(new DirectoryInfo(arg));
+                            }
+                            leadingArg = null;
+                            break;
+                        case ArgExcludeDir:
+                            if (Directory.Exists(arg))
+                            {
+                                exclDirs.Add(arg);
+                            }
+                            leadingArg = null;
+                            break;
+                        case ArgExcludeFilePattern:
+                            exclFilePatterns.Add(arg);
+                            leadingArg = null;
+                            break;
+                        case ArgIncludeFilePattern:
+                            inclFilePatterns.Add(arg);
+                            leadingArg = null;
+                            break;
+                        default:
+                            throw new ArgumentException($"Unexpected arg {leadingArg}.");
+                    }
+                }
+            }
+            catch (ArgumentException e)
+            {
+                Console.WriteLine($"Argument Error: {e.Message}");
+                PrintHelp();
+                return;
+            }
+
+            var outputToFile = outputFileName != null;
+            if (outputToFile)
+            {
+                if (File.Exists(outputFileName))
+                {
+                    if (!quiet)
+                    {
+                        Console.Write($"'{outputFileName}' already exists. Continue (Y)?");
+                        var r = Console.ReadLine();
+                        if (r.ToUpper() != "Y")
                         {
-                            dirs.Add(new DirectoryInfo(arg));
-                        }
-                        activeArg = null;
-                        break;
-                    case ArgExcludeDir:
-                        if (Directory.Exists(arg))
-                        {
-                            exclDirs.Add(arg);
-                        }
-                        activeArg = null;
-                        break;
-                    case ArgExcludeFilePattern:
-                        exclFilePatterns.Add(arg);
-                        activeArg = null;
-                        break;
-                    case ArgIncludeFilePattern:
-                        inclFilePatterns.Add(arg);
-                        activeArg = null;
-                        break;
-                    case ArgOutputFile:
-                        outputFileName = arg;
-                        activeArg = null;
-                        break;
-                    case ArgThreadNum:
-                        if (!int.TryParse(arg, out threadNum))
-                        {
-                            Console.WriteLine($"Error: Invalid {ArgThreadNum} value: {arg}.");
-                            PrintHelp();
+                            Console.WriteLine($"Cancelled by user.");
                             return;
                         }
-                        activeArg = null;
-                        break;
-                    case ArgLogLevl:
-                        switch (arg.ToUpper())
-                        {
-                            case LogLevelError:
-                                ddPar.LogLevel = DeDupParameters.LogLevels.Error;
-                                break;
-                            case LogLevelWarning:
-                                ddPar.LogLevel = DeDupParameters.LogLevels.Warning;
-                                break;
-                            case LogLevelVerbose:
-                                ddPar.LogLevel = DeDupParameters.LogLevels.Verbose;
-                                break;
-                            default:
-                                Console.WriteLine($"Error: Invalid {ArgLogLevl} value: {arg}.");
-                                PrintHelp();
-                                return;
-                        }
-                        activeArg = null;
-                        break;
-                    case null:
-                        switch (arg)
-                        {
-                            case "--help":
-                            case "-h":
-                                PrintHelp();
-                                return;
-                        }
-                        activeArg = arg;
-                        break;
-                    default:
-                        Console.WriteLine($"Error: Unexepcted arg {activeArg}");
-                        PrintHelp();
+                    }
+                    logger.WarningLine($"Warning: '{outputFileName}' already exists, overwritten.");
+                }
+                else
+                {
+                    var dir = Path.GetDirectoryName(outputFileName);
+                    if (!Directory.Exists(dir))
+                    {
+                        logger.ErrorLine("Error: directory for '{outputFileName}' does not exist.");
                         return;
+                    }
                 }
             }
 
+            ddPar.Logger = logger;
             ddPar.Dirs = dirs;
-
             ddPar.ExcludeDir = exclDirs.Count > 0? new Predicate<DirectoryInfo>(
                 d=>exclDirs.Contains(d.FullName)
             ) : null;
@@ -171,9 +261,13 @@ namespace DeDup
                     return false;
                 }
             ) : null;
-            ddPar.ExcludeFile = exclFilePatterns.Count > 0? new Predicate<FileInfo>(
+            ddPar.ExcludeFile = (exclFilePatterns.Count > 0 || !includeCcDup)? new Predicate<FileInfo>(
                 f=>
                 {
+                    if (!includeCcDup && f.Extension == ".ccdup")
+                    {
+                        return false;
+                    }
                     foreach (var ifp in exclFilePatterns)
                     {
                         var res = Regex.Matches(f.Name, ifp);
@@ -191,32 +285,43 @@ namespace DeDup
                      threadNum : Environment.ProcessorCount } 
                 : null;
 
-            Console.WriteLine($"Threads: {ddPar.ParallelOptions?.MaxDegreeOfParallelism?? 1}");
+            logger.InfoLine($"Threads: {ddPar.ParallelOptions?.MaxDegreeOfParallelism?? 1}");
 
             var dd = new DeDuper(ddPar);
 
-            var outputToFile = outputFileName != null;
             using var output = outputToFile?
                 new StreamWriter(outputFileName) : Console.Out;
+            long totalDupSize = 0;
+            var totalDupFiles = 0;
             foreach (var ddg in dd.DupFileGroups)
             {
                 output.WriteLine(outputToFile? CcBar : ConsoleBar);
+                var dupSize = ddg.Length * (ddg.Files.Count-1);
+                totalDupSize += dupSize;
+                totalDupFiles += ddg.Files.Count-1;
                 foreach (var f in ddg.Files)
                 {
                     output.WriteLine($"{f.File.Name}\t{f.File.DirectoryName}\t{StringifyFileLength(f.FileLength)}\t{f.File.CreationTime}");
                 }                
             }
 
+            var majorSeparator = outputToFile? CcBar : ConsoleBar;
             if (dd.FailedFiles.Count > 0)
             {
-                var bar = outputToFile? CcBar : ConsoleBar;
-                output.WriteLine(bar.Replace('-', '='));
+                output.WriteLine(majorSeparator.Replace('-', '='));
                 output.WriteLine($"Failed to read {dd.FailedFiles.Count} files.");
                 foreach (var ff in dd.FailedFiles.OrderBy(x=>x.File.FullName))
                 {
                     output.WriteLine(ff.File.FullName);
                 }
             }
+
+            if (outputToFile)
+            {
+                output.WriteLine(majorSeparator.Replace('-', '='));
+                output.WriteLine($"{totalDupFiles} duplicate files in {StringifyFileLength(totalDupSize)}.");
+            }
+            logger.InfoLine($"{totalDupFiles} duplicate files in {StringifyFileLength(totalDupSize)}.");
         }
     }
 }

@@ -24,10 +24,10 @@ namespace DeDup.Core
                     dict[f.FileLength] = v;
                 }
                 v.AddFile(f);
-                Info($"\r{++fileCount} files added...");
+                _parameters.Logger?.Info($"\r{++fileCount} files added...");
             }
             var t1 = DateTime.UtcNow;
-            InfoLine($"\r{fileCount} files added, took {(t1-t0).TotalSeconds:0.00} seconds.");
+            _parameters.Logger?.InfoLine($"\r{fileCount} files added, {(t1-t0).TotalSeconds:0.00} seconds taken.");
 
             var groupCount = 0;
             //TODO cancelaltion
@@ -46,7 +46,7 @@ namespace DeDup.Core
                         }
                         lock(this)
                         {
-                            Info($"\r{++groupCount}/{dict.Count} groups split...");
+                            _parameters.Logger?.Info($"\r{++groupCount}/{dict.Count} groups split...");
                         }
                     });
             }
@@ -55,35 +55,21 @@ namespace DeDup.Core
                 foreach (var dfg in dict.Values.Reverse())
                 {
                     DupFileGroups.AddRange(dfg.Split(ff=>FailedFiles.Add(ff)));
-                    Info($"\r{++groupCount}/{dict.Count} groups split...");
+                    _parameters.Logger?.Info($"\r{++groupCount}/{dict.Count} groups split...");
                 }
             }
             var t2 = DateTime.UtcNow;
-            InfoLine($"\r{dict.Count} groups split into {DupFileGroups.Count}, took {(t2-t1).TotalSeconds:0.00} seconds.");
+            _parameters.Logger?.InfoLine($"\r{dict.Count} groups split into {DupFileGroups.Count}, {(t2-t1).TotalSeconds:0.00} seconds taken.");
 
-            Info($"\rSorting groups...");
+            _parameters.Logger?.Info($"\rSorting groups...");
             DupFileGroups.Sort((a,b)=>b.Length.CompareTo(a.Length));
             var t3 = DateTime.UtcNow;
-            InfoLine($"\rGroups sorted, took {(t3-t2).TotalSeconds:0.00} seconds.");
-            InfoLine($"\rDeDup done, totally took {(t3-t0).TotalSeconds:0.00} seconds.");
+            _parameters.Logger?.InfoLine($"\rGroups sorted, {(t3-t2).TotalSeconds:0.00} seconds taken.");
+            _parameters.Logger?.InfoLine($"\rDeDup all done, {(t3-t0).TotalSeconds:0.00} seconds taken.");
         }
         public List<DdFileGroup> DupFileGroups { get; } = new List<DdFileGroup>();
         public List<DdFile> FailedFiles { get; } = new List<DdFile>();
-        private void Log(DeDupParameters.LogLevels logLevels, string s)
-        {
-            if (_parameters.LogLevel >= logLevels)
-            {
-                Console.Write(s);
-            }
-        }
-        private void Info(string s)
-        {
-            Log(DeDupParameters.LogLevels.Verbose, s);
-        }
-        private void InfoLine(string s)
-        {
-            Log(DeDupParameters.LogLevels.Verbose, s+"\n");
-        }
+        
         private IEnumerable<FileInfo> CollectFiles()
         {
             IEnumerable<FileInfo> TraverseFilesRecursive(DirectoryInfo dir)
