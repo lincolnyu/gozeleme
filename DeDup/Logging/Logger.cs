@@ -1,7 +1,8 @@
 using System;
 using System.IO;
+using System.Collections.Generic;
 
-namespace DeDup.Core
+namespace DeDup.Logging
 {
     public class Logger
     {
@@ -12,13 +13,16 @@ namespace DeDup.Core
             Verbose
         }
 
-        public LogLevels LogLevel { get; set; } = LogLevels.Warning;
+        public HashSet<ILogWriter> LogWriters { get; } = new HashSet<ILogWriter>();
 
-        public void Log(LogLevels logLevels, string s)
+        public void Log(LogLevels logLevel, string s)
         {
-            if (LogLevel >= logLevels)
+            foreach (var lw in LogWriters)
             {
-                Console.Write(s);
+                if (lw.LogLevel >= logLevel)
+                {
+                    lw.Write(s);
+                }
             }
         }
         public void Info(string s)

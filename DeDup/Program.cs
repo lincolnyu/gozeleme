@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using DeDup.Core;
+using DeDup.Logging;
 
 namespace DeDup
 {
@@ -31,11 +32,11 @@ namespace DeDup
         static void PrintHelp()
         {
             Console.WriteLine($"[{ArgDir} <dir>...] [{ArgExcludeDir} <excluded_dir>...] "
-                + "[{ArgExcludeFilePattern} <excluded_file_pattern>...] "
-                + "[{ArgIncludeFilePattern} <included_file_pattern>...] "
-                + "[{ArgOutputFile}=<output_file>] [{ArgThreadNum}=<thread_num=0/*System*/|(1)/*Single*/|2|3|4|...>] "
-                + $"[{ArgLogLevl}=<log_level={LogLevelError}|({LogLevelWarning})|{LogLevelVerbose}>]"
-                + $"[{ArgIncludeCcDup}]=<(0)|1>"
+                + $"[{ArgExcludeFilePattern} <excluded_file_pattern>...] "
+                + $"[{ArgIncludeFilePattern} <included_file_pattern>...] "
+                + $"[{ArgOutputFile}=<output_file>] [{ArgThreadNum}=<thread_num=0/*System*/|(1)/*Single*/|2|3|4|...>] "
+                + $"[{ArgLogLevl}=<log_level={LogLevelError}|({LogLevelWarning})|{LogLevelVerbose}>] "
+                + $"[{ArgIncludeCcDup}]=<(0)|1> "
                 + $"[{ArgQuiet}|{ArgQuietAbbr}]");
             Console.WriteLine("--help|-h");
         }
@@ -111,7 +112,9 @@ namespace DeDup
             string outputFileName = null;
             var includeCcDup = false; 
             var quiet = false;
+            var consoleLogWritter = new ConsoleLogWriter();
             var logger = new Logger();
+            logger.LogWriters.Add(consoleLogWritter);
 
             try
             {
@@ -132,13 +135,13 @@ namespace DeDup
                                 switch (sLogLevel.ToUpper())
                                 {
                                     case LogLevelError:
-                                        logger.LogLevel = Logger.LogLevels.Error;
+                                        consoleLogWritter.LogLevel = Logger.LogLevels.Error;
                                         break;
                                     case LogLevelWarning:
-                                        logger.LogLevel = Logger.LogLevels.Warning;
+                                        consoleLogWritter.LogLevel = Logger.LogLevels.Warning;
                                         break;
                                     case LogLevelVerbose:
-                                        logger.LogLevel = Logger.LogLevels.Verbose;
+                                        consoleLogWritter.LogLevel = Logger.LogLevels.Verbose;
                                         break;
                                     default:
                                         throw new ArgumentException($"Invalid {ArgLogLevl} value: '{sLogLevel}'.");
@@ -170,14 +173,15 @@ namespace DeDup
                                     case ArgQuiet:
                                     case ArgQuietAbbr:
                                         quiet = true;
-                                        leadingArg = null;
                                         break;                                    
                                     case "--help":
                                     case "-h":
                                         PrintHelp();
                                         return;
+                                    default:
+                                        leadingArg = arg;
+                                        break;
                                 }
-                                leadingArg = arg;
                             }
                             break;
                         case ArgDir:
@@ -316,12 +320,13 @@ namespace DeDup
                 }
             }
 
+            var summary = $"{totalDupFiles} duplicate files in {StringifyFileLength(totalDupSize)}.";
             if (outputToFile)
             {
                 output.WriteLine(majorSeparator.Replace('-', '='));
-                output.WriteLine($"{totalDupFiles} duplicate files in {StringifyFileLength(totalDupSize)}.");
+                output.WriteLine(summary);
             }
-            logger.InfoLine($"{totalDupFiles} duplicate files in {StringifyFileLength(totalDupSize)}.");
+            logger.InfoLine(summary);
         }
     }
 }

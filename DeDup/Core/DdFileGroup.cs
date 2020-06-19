@@ -66,26 +66,28 @@ namespace DeDup.Core
 
         private static IEnumerable<List<DdFile>> SplitRecursive(List<DdFile> group, long remaining, Action<DdFile> addFailedFile)
         {
-            System.Diagnostics.Debug.Assert(group.Count > 1);
         _next:
             while(remaining-- > 0)
             {
+                System.Diagnostics.Debug.Assert(group.Count > 1);
                 byte bLast;
                 var j = group.Count-1;
-                while (!TryReadByte(group[j], out bLast))
+                for (; !TryReadByte(group[j], out bLast); j--)
                 {
                     group[j].FinalizeRead();
                     addFailedFile(group[j]);
                     group.RemoveAt(j);
-                    if (group.Count == 1)
+                    if (j == 1)
                     {
+                        System.Diagnostics.Debug.Assert(group.Count == 1);
                         goto _final;
                     }
                 }
+                System.Diagnostics.Debug.Assert(j > 0);
                 while (--j >= 0)
                 {
                     byte bj;
-                    for (; !TryReadByte(group[j], out bj); j--)
+                    for( ; !TryReadByte(group[j], out bj); j--)
                     {
                         group[j].FinalizeRead();
                         addFailedFile(group[j]);
@@ -102,7 +104,7 @@ namespace DeDup.Core
                     
                     if (bj != bLast)
                     {
-                        // last down to j+1 is a group
+                        // 'last' down to j+1 is a group
                         var dict = new Dictionary<byte, List<DdFile>>();
                         dict[bLast] = group.GetRange(j+1, group.Count-j-1);
                         dict[bj] = new List<DdFile>{group[j]};
