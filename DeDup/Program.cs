@@ -103,7 +103,7 @@ namespace DeDup
         static void Main(string[] args)
         {
             string leadingArg = null;
-            var ddPar = new DeDupParameters();
+            var ddPar = new DeDuper.Parameters();
             var dirs = new List<DirectoryInfo>();
             var exclDirs = new HashSet<string>();
             var exclFilePatterns = new List<string>();

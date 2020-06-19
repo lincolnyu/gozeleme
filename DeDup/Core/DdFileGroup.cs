@@ -67,7 +67,7 @@ namespace DeDup.Core
         private static IEnumerable<List<DdFile>> SplitRecursive(List<DdFile> group, long remaining, Action<DdFile> addFailedFile)
         {
         _next:
-            while(remaining-- > 0)
+            while (remaining-- > 0)
             {
                 System.Diagnostics.Debug.Assert(group.Count > 1);
                 byte bLast;

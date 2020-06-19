@@ -3,13 +3,25 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using DeDup.Logging;
 
 namespace DeDup.Core
 {
     public class DeDuper
     {
-        private DeDupParameters _parameters;
-        public DeDuper(DeDupParameters parameters)
+        public class Parameters
+        {
+             public IEnumerable<DirectoryInfo> Dirs { get; set; }
+            public Predicate<DirectoryInfo> ExcludeDir { get; set; }
+            public Predicate<FileInfo> IncludeFile { get; set; }
+            public Predicate<FileInfo> ExcludeFile { get; set; }
+            public ParallelOptions ParallelOptions { get; set; }
+            public Logger Logger { get; set; }
+        }
+
+        private DeDuper.Parameters _parameters;
+
+        public DeDuper(DeDuper.Parameters parameters)
         {
             _parameters = parameters;
             var t0 = DateTime.UtcNow;
