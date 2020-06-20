@@ -2,7 +2,7 @@ using System;
 using System.IO;
 using System.Collections.Generic;
 
-namespace DeDup.Logging
+namespace Logging
 {
     public class Logger
     {

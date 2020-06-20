@@ -3,7 +3,7 @@ using System.IO;
 
 namespace DeDup.Core
 {
-    public class DdFile
+    public class DdFile : IReadByteAffirmative
     {
         private FileStream _stream;
 
@@ -11,6 +11,7 @@ namespace DeDup.Core
         {
             File = file;
         }
+
         public FileInfo File {get;}
         public long FileLength => File.Length;
 
@@ -31,6 +32,12 @@ namespace DeDup.Core
             }
         }
 
+        public byte ReadByteAffirmative()
+        {
+            System.Diagnostics.Debug.Assert(_stream != null);
+            return (byte)_stream.ReadByte();
+        }
+
         public void FinalizeRead()
         {
             if (_stream != null)
@@ -38,12 +45,6 @@ namespace DeDup.Core
                 _stream.Close();
                 _stream = null;
             }
-        }
-
-        public byte ReadByteAffirmative()
-        {
-            System.Diagnostics.Debug.Assert(_stream != null);
-            return (byte)_stream.ReadByte();
         }
     }
 }

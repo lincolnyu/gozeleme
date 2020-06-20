@@ -1,6 +1,6 @@
 using System;
 
-namespace DeDup.Logging
+namespace Logging
 {
     public interface ILogWriter
     {
