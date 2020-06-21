@@ -20,7 +20,7 @@ namespace DeDup.Core
 
         public List<DdFile> Files { get; } = new List<DdFile>();
 
-        public long Length => Files[0].FileLength;
+        public long FileLength => Files[0].FileLength;
 
         public void AddFile(DdFile f)
         {
@@ -43,7 +43,7 @@ namespace DeDup.Core
             }
             if (files.Count >= 2)
             {
-                foreach (var ll in SplitRecursive<DdFile>(files, Length, addFailedFile))
+                foreach (var ll in SplitRecursive<DdFile>(files, FileLength, addFailedFile))
                 {
                     yield return new DdFileGroup(ll);
                 }

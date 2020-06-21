@@ -40,38 +40,6 @@ namespace DeDup
                 + $"[{ArgQuiet}|{ArgQuietAbbr}]");
             Console.WriteLine("--help|-h");
         }
-        
-        static string StringifyFileLength(long fileLength)
-        {
-            const long OneKB = 1024; 
-            const long OneMB = OneKB * 1024;
-            const long OneGB = OneMB * 1024;
-            const long OneTB = OneGB * 1024;
-            var scales = new []{OneKB, OneMB, OneGB, OneTB};
-            var suffices = new []{"KB", "MB", "GB", "TB"};
-
-            long valRound = 0;
-            for (var i = 0; i < scales.Length; i++)
-            {
-                var scale = scales[i];
-                var suffix = suffices[i];
-                var val = (double)fileLength / scale;
-                if (val < 10)
-                {
-                    return $"{val:0.00} {suffix}";
-                }
-                else if (val < 100)
-                {
-                    return $"{val:00.0} {suffix}";
-                }
-                valRound = (long)Math.Round(val);
-                if (valRound < 1000)
-                {
-                    return $"{valRound} {suffix}";
-                }
-            }
-            return $"{valRound} {suffices[suffices.Length-1]}";
-        }
 
         static bool TryGetArgValue(string arg, string argHead, out string sVal, bool checkEqualSign=true)
         {
@@ -116,6 +84,7 @@ namespace DeDup
             var logger = new Logger();
             logger.LogWriters.Add(consoleLogWritter);
 
+            logger.Info($"\rParsing args...");
             try
             {
                 foreach (var arg in args)
@@ -289,6 +258,7 @@ namespace DeDup
                      threadNum : Environment.ProcessorCount } 
                 : null;
 
+            logger.InfoLine($"\rParsing args done.");
             logger.InfoLine($"Threads: {ddPar.ParallelOptions?.MaxDegreeOfParallelism?? 1}");
 
             var dd = new DeDuper(ddPar);
@@ -300,12 +270,12 @@ namespace DeDup
             foreach (var ddg in dd.DupFileGroups)
             {
                 output.WriteLine(outputToFile? CcBar : ConsoleBar);
-                var dupSize = ddg.Length * (ddg.Files.Count-1);
+                var dupSize = ddg.FileLength * (ddg.Files.Count-1);
                 totalDupSize += dupSize;
                 totalDupFiles += ddg.Files.Count-1;
                 foreach (var f in ddg.Files)
                 {
-                    output.WriteLine($"{f.File.Name}\t{f.File.DirectoryName}\t{StringifyFileLength(f.FileLength)}\t{f.File.CreationTime}");
+                    output.WriteLine($"{f.File.Name}\t{f.File.DirectoryName}\t{f.FileLength.StringifyFileLength()}\t{f.File.CreationTime}");
                 }                
             }
 
@@ -320,7 +290,7 @@ namespace DeDup
                 }
             }
 
-            var summary = $"{totalDupFiles} duplicate files in {StringifyFileLength(totalDupSize)}.";
+            var summary = $"{totalDupFiles} duplicate files in {totalDupSize.StringifyFileLength()}.";
             if (outputToFile)
             {
                 output.WriteLine(majorSeparator.Replace('-', '='));

@@ -58,7 +58,7 @@ namespace DeDup.Core
                         }
                         lock(this)
                         {
-                            _parameters.Logger?.Info($"\r{++groupCount}/{dict.Count} groups split...");
+                            _parameters.Logger?.Info($"\r{++groupCount}/{dict.Count} groups split. File length of last group: {dfg.FileLength.StringifyFileLength()}   ");
                         }
                     });
             }
@@ -74,7 +74,7 @@ namespace DeDup.Core
             _parameters.Logger?.InfoLine($"\r{dict.Count} groups split into {DupFileGroups.Count}, {(t2-t1).TotalSeconds:0.00} seconds taken.");
 
             _parameters.Logger?.Info($"\rSorting groups...");
-            DupFileGroups.Sort((a,b)=>b.Length.CompareTo(a.Length));
+            DupFileGroups.Sort((a,b)=>b.FileLength.CompareTo(a.FileLength));
             var t3 = DateTime.UtcNow;
             _parameters.Logger?.InfoLine($"\rGroups sorted, {(t3-t2).TotalSeconds:0.00} seconds taken.");
             _parameters.Logger?.InfoLine($"\rDeDup all done, {(t3-t0).TotalSeconds:0.00} seconds taken.");
