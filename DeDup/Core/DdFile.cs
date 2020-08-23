@@ -1,9 +1,10 @@
 using System;
 using System.IO;
+using CcDupList;
 
 namespace DeDup.Core
 {
-    public class DdFile : IReadByteAffirmative
+    public class DdFile : IReadByteAffirmative, IDupFile
     {
         private FileStream _stream;
 

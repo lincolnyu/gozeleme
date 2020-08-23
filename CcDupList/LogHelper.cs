@@ -2,9 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 
-namespace DeDup.Core
-{
-    public static class Log
+namespace CcDupList
+{   
+    public static class LogHelper
     {
         public static string StringifyFileLength(this long fileLength)
         {

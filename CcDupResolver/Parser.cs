@@ -6,7 +6,7 @@ namespace CcDupResolver
 {
     class Parser
     {
-        const string Bar = "------------------------------------------------------------------------------------------------------------------------------------------------------";
+        public const string Bar = CcDupList.WriterConstants.CcBar; 
         private StreamReader _sr;
         private Logger _logger;
         public Parser(StreamReader sr, Logger logger)
@@ -16,64 +16,44 @@ namespace CcDupResolver
         }
         public IEnumerable<DupFileGroup> Run()
         {
-            var dupFileGroup = new DupFileGroup();
-            var error = false;
-            for (var iLine = 0; ; iLine++)
+            var iLine = 0;
+            var g = new DupFileGroup();
+            for (; ; iLine++)
             {
                 if (_sr.EndOfStream)
                 {
-                    if (dupFileGroup.Files.Count > 1)
+                    g.Validate(_logger);
+                    if (g.IsValidDupGroup)
                     {
-                        yield return dupFileGroup;
-                    }
-                    else
-                    {
-                        
+                        yield return g;
                     }
                     break;
                 }
                 var l = _sr.ReadLine();
                 if (l == Bar)
                 {
-                    if (error)
+                    g.Validate(_logger);
+                    if (g.IsValidDupGroup)
                     {
-                        _logger.ErrorLine("");
+                        yield return g;
                     }
-                    else if (dupFileGroup.Files.Count <= 1)
+                    else if (iLine > 0)
                     {
-                        _logger.ErrorLine("");
+                        _logger.ErrorLine($"Line {iLine}: Concluding a non-duplicate file group.");
                     }
-                    else
-                    {
-                        yield return dupFileGroup;
-                    }
-                    dupFileGroup = new DupFileGroup();
-                    error = false;
+                    g = new DupFileGroup();
                     continue;
                 }
                 var segs = l.Split('\t');
                 if (segs.Length < 2)
                 {
                     _logger.ErrorLine($"Line {iLine}: '{l}' Bad format.");
-                    error = true;
                     continue;
                 }
                 var fn = segs[0];
                 var dir = segs[1];
-                var dupFile = new DupFile
-                {
-                    Dir = dir,
-                    File = fn,
-                };
-                if (!File.Exists(dupFile.FullPath))
-                {
-                    _logger.ErrorLine($"Line {iLine}: File '{dupFile.FullPath}' not found.");
-                    error = true;
-                    continue;
-                }
-                dupFileGroup.Files.Add(dupFile);
+                g.AddFile(Path.Combine(dir, fn), _logger);
             }
         }
     }
 }
-

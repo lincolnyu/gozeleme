@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using CcDupList;
 
 namespace DeDup
 {
@@ -262,22 +263,27 @@ namespace DeDup
             logger.InfoLine($"Threads: {ddPar.ParallelOptions?.MaxDegreeOfParallelism?? 1}");
 
             var dd = new DeDuper(ddPar);
-
-            using var output = outputToFile?
-                new StreamWriter(outputFileName) : Console.Out;
+            var output = outputToFile? new StreamWriter(outputFileName) : Console.Out;
+            var writer = new Writer<DdFile>(output);
             long totalDupSize = 0;
             var totalDupFiles = 0;
-            foreach (var ddg in dd.DupFileGroups)
-            {
-                output.WriteLine(outputToFile? CcBar : ConsoleBar);
-                var dupSize = ddg.FileLength * (ddg.Files.Count-1);
-                totalDupSize += dupSize;
-                totalDupFiles += ddg.Files.Count-1;
-                foreach (var f in ddg.Files)
-                {
-                    output.WriteLine($"{f.File.Name}\t{f.File.DirectoryName}\t{f.FileLength.StringifyFileLength()}\t{f.File.CreationTime}");
-                }                
-            }
+            writer.Run(dd.DupFileGroups, out totalDupSize, out totalDupFiles);
+
+            // using var output = outputToFile?
+            //     new StreamWriter(outputFileName) : Console.Out;
+            // long totalDupSize = 0;
+            // var totalDupFiles = 0;
+            // foreach (var ddg in dd.DupFileGroups)
+            // {
+            //     output.WriteLine(outputToFile? CcBar : ConsoleBar);
+            //     var dupSize = ddg.FileLength * (ddg.Files.Count-1);
+            //     totalDupSize += dupSize;
+            //     totalDupFiles += ddg.Files.Count-1;
+            //     foreach (var f in ddg.Files)
+            //     {
+            //         output.WriteLine($"{f.File.Name}\t{f.File.DirectoryName}\t{f.FileLength.StringifyFileLength()}\t{f.File.CreationTime}");
+            //     }                
+            // }
 
             var majorSeparator = outputToFile? CcBar : ConsoleBar;
             if (dd.FailedFiles.Count > 0)

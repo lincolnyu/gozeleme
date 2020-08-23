@@ -1,10 +1,11 @@
 using System;
 using System.Collections.Generic;
 using static DeDup.Core.SplitHeler;
+using CcDupList;
 
 namespace DeDup.Core
 {
-    public class DdFileGroup
+    public class DdFileGroup : IDupFileGroup<DdFile>
     {
         public DdFileGroup()
         {
@@ -19,6 +20,8 @@ namespace DeDup.Core
         }
 
         public List<DdFile> Files { get; } = new List<DdFile>();
+
+        ICollection<DdFile> IDupFileGroup<DdFile>.Files => Files;
 
         public long FileLength => Files[0].FileLength;
 

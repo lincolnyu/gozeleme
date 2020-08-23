@@ -6,6 +6,7 @@
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\Logging\Logging.csproj" />
+    <ProjectReference Include="..\CcDupList\CcDupList.csproj" />
   </ItemGroup>
 
 </Project>
